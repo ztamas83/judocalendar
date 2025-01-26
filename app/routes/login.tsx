@@ -9,15 +9,9 @@ import {
 } from "firebase/auth";
 import { auth as clientAuth } from "~/firebase.client";
 import { auth as serverAuth } from "~/server/firebase.server";
-import { ActionFunction } from "@remix-run/node";
+import { ActionFunction } from "react-router";
 import { session } from "~/cookies";
-import {
-  Form,
-  Link,
-  useActionData,
-  useFetcher,
-  redirect,
-} from "@remix-run/react";
+import { Form, Link, useActionData, useFetcher, redirect } from "react-router";
 import { DateTime } from "luxon";
 
 // use loader to check for existing session, if found, send the user to the blogs site

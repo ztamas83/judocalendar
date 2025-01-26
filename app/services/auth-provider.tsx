@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import {
   GoogleAuthProvider,
   signInWithPopup,
@@ -6,7 +5,6 @@ import {
   User,
 } from "firebase/auth";
 import { auth as clientAuth } from "~/firebase.client";
-import { auth as serverAuth } from "~/server/firebase.server";
 import { useContext, createContext, useEffect, useReducer } from "react";
 
 const initialState: AuthState = {
@@ -50,9 +48,9 @@ const AuthContext = createContext({
   logout: () => Promise.resolve(),
 });
 
-AuthProvider.propTypes = {
-  children: PropTypes.node,
-};
+// AuthProvider.propTypes = {
+//   children: PropTypes.node,
+// };
 
 function AuthProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);

@@ -1,14 +1,6 @@
 import { DateTime, Interval } from "luxon";
 import { useState } from "react";
-import useFirebaseData from "~/services/techniques-service";
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  CardFooter,
-  Typography,
-  Button,
-} from "@material-tailwind/react";
+import useFirebaseData from "~/services/firebase-data-service";
 
 interface TrainingData {
   id: string;
@@ -103,11 +95,14 @@ export default function Trainings() {
                   return t.date.isValid && t.date.hasSame(day, "day");
                 })
                 .map((t) => (
-                  <div key={t.id} className="bg-gray-100 p-2 rounded">
-                    <Card></Card>
+                  <button
+                    key={t.id}
+                    className="bg-gray-100 p-2 rounded"
+                    onClick={() => setSelectedEvent(t)}
+                  >
                     {t.date.toFormat("HH:mm")} -
                     {t.date.plus({ minutes: t.duration }).toFormat("HH:mm")}
-                  </div>
+                  </button>
                 ))}
             </div>
           </div>
@@ -117,7 +112,7 @@ export default function Trainings() {
         <h2 className="text-xl font-bold mb-4">Add Training</h2>
         <div className="grid grid-cols-3 gap-4">
           {selectedEvent && (
-            <div className="border p-4 rounded-lg">
+            <div className="border p-4 rounded-md">
               <h3 className="font-bold">
                 {selectedEvent.date.toFormat("HH:mm")}
               </h3>

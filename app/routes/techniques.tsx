@@ -1,5 +1,5 @@
 import { useState } from "react";
-import useFirebaseData from "~/services/techniques-service";
+import useFirebaseData from "~/services/firebase-data-service";
 
 type TechniqueCategory = "nage-waza" | "osae-komi-waza";
 export interface Technique {

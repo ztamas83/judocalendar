@@ -1,6 +1,6 @@
 import {
   createCookie,
-  useLoaderData
+  useLoaderData,
   type LoaderFunctionArgs,
   type MetaFunction,
 } from "react-router";
