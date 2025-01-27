@@ -1,10 +1,8 @@
 import {
   createCookie,
-  useLoaderData,
   type LoaderFunctionArgs,
   type MetaFunction,
 } from "react-router";
-import { auth } from "~/firebase.client";
 
 export const meta: MetaFunction = () => {
   return [
@@ -20,19 +18,16 @@ const authCookie = createCookie("session", {
 });
 
 // Get token from cookie in a loader or action
-export async function loader({ request }: LoaderFunctionArgs) {
-  const cookieHeader = request.headers.get("Cookie");
-  // if (!cookieHeader?.includes("session=")) {
-  //   return redirect("/login");
-  // }
-  const token = await authCookie.parse(cookieHeader);
+// export async function loader({ request }: LoaderFunctionArgs) {
+//   const cookieHeader = request.headers.get("Cookie");
+//   // if (!cookieHeader?.includes("session=")) {
+//   //   return redirect("/login");
+//   // }
+//   const token = await authCookie.parse(cookieHeader);
 
-  return token;
-}
+//   return token;
+// }
 export default function Index() {
-  const token = useLoaderData<typeof loader>();
-
-  const user = token ? auth.currentUser : null;
   return (
     <div className="flex flex-col min-h-screen">
       <div className="flex flex-col items-center justify-center h-screen">

@@ -12,6 +12,12 @@ export interface Technique {
   // Add other fields as needed
 }
 
+// export async function loader() {
+//   return {
+//     techniques: await useFirebaseData<Technique>("techniques"),
+//   };
+// }
+
 export default function Techniques() {
   const { data, isLoading, error } = useFirebaseData<Technique>("techniques");
 
