@@ -1,8 +1,15 @@
+.DS_Store
+npm-debug.log
 node_modules
 
 /.cache
 /build
 .env
 
-/.firebase
-/.react-router/**
+.firebase
+
+# v7 build files
+.react-router
+
+# v7 reference docs
+/public

@@ -40,12 +40,12 @@ const storage = getStorage(app);
 const auth = getAuth(app);
 // auth.setPersistence(browserSessionPersistence);
 
-auth.onAuthStateChanged((user) => {
-  if (user) {
-    console.log("authenticated", user);
-  } else {
-    console.log("signed out");
-  }
-});
+// auth.onAuthStateChanged((user) => {
+//   if (user) {
+//     console.log("authenticated", user);
+//   } else {
+//     console.log("signed out");
+//   }
+// });
 
 export { db, storage, auth };
