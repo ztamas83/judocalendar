@@ -1,10 +1,59 @@
 import { useEffect, useState } from "react";
-import { collection, DocumentSnapshot, getDocs } from "firebase/firestore";
+import {
+  collection,
+  DocumentSnapshot,
+  getDocs,
+  addDoc,
+  Timestamp,
+  onSnapshot,
+} from "firebase/firestore";
 import { db } from "~/firebase.client"; // Assuming you have your Firebase initialization in a separate file
+import { TrainingData } from "~/routes/trainings";
+import { DateTime } from "luxon";
+import { QueryDocumentSnapshot } from "firebase-admin/firestore";
+
+export enum Collections {
+  TRAININGS = "trainings",
+  TECHNIQUES = "techniques",
+}
+
+// Firestore data converter
+const trainingConverter = {
+  toFirestore: (training: TrainingData) => {
+    return {
+      date: Timestamp.fromMillis(training.date.toMillis()),
+      techniques: training.techniques,
+      duration: training.duration ?? 0,
+      notes: training.notes ?? "",
+    };
+  },
+  fromFirestore: (snapshot: DocumentSnapshot, options) => {
+    const data = snapshot.data(options);
+    if (!data) {
+      throw new Error("Invalid data");
+    }
+    return {
+      id: snapshot.id,
+      date: DateTime.fromJSDate(data.date.toDate()),
+      duration: data.duration,
+      notes: data.notes,
+      techniques: data.techniques,
+      // Map other fields as needed
+    };
+  },
+};
 
 export interface TechniqueCategories {
   categories: string[];
   subCategories: { [key: string]: string[] };
+}
+
+export async function addNewTraining(trainingData: TrainingData) {
+  // TODO: Implement the logic to add a new training
+  const colRef = collection(db, Collections.TRAININGS);
+
+  await addDoc(colRef, trainingConverter.toFirestore(trainingData));
+  console.log("New training added!", trainingData);
 }
 
 export async function getUniqueCategories(): Promise<
@@ -42,7 +91,8 @@ export async function getUniqueCategories(): Promise<
 
 function useFirebaseData<T>(
   collectionName: string,
-  mapFunction?: (doc: DocumentSnapshot) => T
+  mapFunction?: (doc: DocumentSnapshot) => T,
+  dataChangedCallback?: () => void
 ): {
   data: T[];
   isLoading: boolean;
