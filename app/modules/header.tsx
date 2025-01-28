@@ -12,12 +12,14 @@ export default function Header() {
           <Link to="/" className="text-xl font-bold">
             JudoCalendar
           </Link>
-          <Link
-            to="/profile"
-            className="hover:text-gray-500 transition-colors pointer-events-none"
-          >
-            My Profile
-          </Link>
+          {user ? (
+            <Link
+              to="/profile"
+              className="hover:text-gray-500 transition-colors"
+            >
+              My Profile
+            </Link>
+          ) : null}
           <Link
             to="/trainings"
             className="hover:text-gray-500 transition-colors"
@@ -46,11 +48,7 @@ export default function Header() {
                 Logout
               </button>
             </div>
-          ) : (
-            <button onClick={loginWithGoogle} className="text-xs">
-              Login
-            </button>
-          )}
+          ) : null}
           {/* <span>{user?.displayName}</span>
           <Link
             to="/logout"

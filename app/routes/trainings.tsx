@@ -1,12 +1,13 @@
 import { DateTime, Interval } from "luxon";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import useFirebaseData from "~/services/firebase-data-service";
+import { Technique } from "./techniques";
 
 interface TrainingData {
   id: string;
   date: DateTime;
-  duration: number; //duration in minutes
-  notes: string;
+  duration?: number; //duration in minutes
+  notes?: string;
   techniques: string[];
   // Add other fields as needed
 }
@@ -30,6 +31,12 @@ export default function Trainings() {
     "trainings",
     mapFromFirebase
   );
+
+  const {
+    data: techniques,
+    isLoading: techniquesLoading,
+    error: techniquesError,
+  } = useFirebaseData<Technique>("techniques");
 
   const weekStart = selectedDate.startOf("week");
   const weekEnd = selectedDate.endOf("week");
@@ -100,8 +107,7 @@ export default function Trainings() {
                     className="bg-gray-100 p-2 rounded"
                     onClick={() => setSelectedEvent(t)}
                   >
-                    {t.date.toFormat("HH:mm")} -
-                    {t.date.plus({ minutes: t.duration }).toFormat("HH:mm")}
+                    {t.date.toFormat("HH:mm")}
                   </button>
                 ))}
             </div>
@@ -116,7 +122,12 @@ export default function Trainings() {
               <h3 className="font-bold">
                 {selectedEvent.date.toFormat("HH:mm")}
               </h3>
-              <p>{selectedEvent.techniques.join(", ")}</p>
+              <p>
+                {techniques
+                  .filter((t) => selectedEvent.techniques.includes(t.id))
+                  .map((t) => t.name)
+                  .join(", ")}
+              </p>
             </div>
           )}
         </div>

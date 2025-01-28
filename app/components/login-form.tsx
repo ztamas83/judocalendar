@@ -1,21 +1,18 @@
 import { cn } from "~/utils/utils";
-import { Button } from "~/components/ui/button";
 import {
-  Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
-import { Input } from "~/components/ui/input";
-import { Label } from "~/components/ui/label";
+import { Card, TextField, Button } from "@mui/material";
 import { useAuth } from "~/services/auth-provider";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
-  const { loginWithGoogle } = useAuth();
+  const { loginWithGoogle, user } = useAuth();
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
@@ -32,29 +29,28 @@ export function LoginForm({
           <form>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
+                <TextField
                   disabled={true}
                   id="email"
                   type="email"
+                  label="Email"
                   placeholder="m@example.com"
                   required
                 />
               </div>
               <div className="grid gap-2">
-                <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
-                  {/* <a href="#" className="ml-auto inline-block text-sm underline-offset-4 hover:underline" >
-                    Forgot your password?
-                  </a> */}
-                </div>
-                <Input disabled={true} id="password" type="password" required />
+                <TextField
+                  disabled={true}
+                  id="password"
+                  type="password"
+                  label="Password"
+                  required
+                />
               </div>
               <Button type="submit" className="w-full" disabled={true}>
                 Login
               </Button>
               <Button
-                variant="outline"
                 className="w-full hover:bg-gray-300"
                 onClick={loginWithGoogle}
               >

@@ -1,12 +1,33 @@
-import { useState } from "react";
-import useFirebaseData from "~/services/firebase-data-service";
+import { JSX, useEffect, useState } from "react";
+import { useLoaderData } from "react-router";
+import useFirebaseData, {
+  getUniqueCategories,
+  TechniqueCategories,
+} from "~/services/firebase-data-service";
 
-type TechniqueCategory = "nage-waza" | "osae-komi-waza";
+import {
+  Tab,
+  Tabs,
+  ListItem,
+  ListItemText,
+  Typography,
+  List,
+} from "@mui/material";
+
+export async function clientLoader(): Promise<TechniqueCategories | undefined> {
+  const data = await getUniqueCategories();
+  if (!data) {
+    return undefined;
+  }
+  return data;
+}
+
 export interface Technique {
   id: string;
   name: string;
   name_jp: string;
-  category: TechniqueCategory;
+  category: string;
+  sub_category: string;
   level: number;
   description: string;
   // Add other fields as needed
@@ -18,11 +39,31 @@ export interface Technique {
 //   };
 // }
 
+function groupBy(data: any[], key: string): { [key: string]: any[] } {
+  return data.reduce(function (rv, x) {
+    (rv[x[key]] = rv[x[key]] || []).push(x);
+    return rv;
+  }, {});
+}
+
 export default function Techniques() {
   const { data, isLoading, error } = useFirebaseData<Technique>("techniques");
+  const { categories, subCategories } = useLoaderData<TechniqueCategories>();
+  const [selectedCategory, setSelectedCategory] = useState<string>(
+    categories[0]
+  );
+  const [selectedSubCategory, setSelectedSubCategory] = useState<string>(
+    subCategories[selectedCategory][0]
+  );
 
-  const [selectedCategory, setSelectedCategory] =
-    useState<TechniqueCategory>("nage-waza");
+  const [techniquesByCategory, setTechniquesByCategory] = useState<{
+    [key: string]: Technique[];
+  }>(
+    groupBy(
+      data.filter((t) => t.category == selectedCategory),
+      "sub_category"
+    )
+  );
 
   const renderContent = () => {
     if (isLoading) {
@@ -33,76 +74,78 @@ export default function Techniques() {
       return <p>Error: {error.message}</p>;
     }
 
+    const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+      console.log("New sub category selected: ", selectedCategory, newValue);
+      setSelectedSubCategory(newValue);
+    };
+
     return (
       <div className="p-6">
-        <h2 className="text-2xl font-bold mb-4">{selectedCategory}</h2>
-        <div className="grid grid-cols-3 gap-4">
-          {data
-            .filter((t) => t.category == selectedCategory)
-            .map((st) => {
-              return (
-                <div key={st.id} className="border p-4 rounded-lg">
-                  <h3 className="font-bold">{st.name}</h3>
-                  <p>{st.description}</p>
-                </div>
-              );
-            })}
+        <Tabs
+          value={selectedSubCategory}
+          onChange={handleChange}
+          aria-label="basic tabs example"
+        >
+          {subCategories[selectedCategory].map((sc) => (
+            <Tab label={sc} value={sc} />
+          ))}
+        </Tabs>
+
+        <div
+          role="tabpanel"
+          // hidden={value !== index}
+          id={selectedSubCategory}
+          className="p-4"
+        >
+          <List>
+            {techniquesByCategory[selectedSubCategory]?.map((technique) => (
+              <ListItem>
+                <ListItemText
+                  primary={technique.name + " " + technique.name_jp}
+                  secondary={technique.description}
+                />
+              </ListItem>
+            ))}
+          </List>
         </div>
       </div>
     );
   };
 
-  // return (
-  //   <div className="p-6">
-  //     <h2 className="text-2xl font-bold mb-4">Osae Komi Waza (抑込技)</h2>
-  //     <div className="grid grid-cols-3 gap-4">
-  //       <div className="border p-4 rounded-lg">
-  //         <h3 className="font-bold">Kesa Gatame</h3>
-  //         <p>Scarf hold</p>
-  //       </div>
-  //       <div className="border p-4 rounded-lg">
-  //         <h3 className="font-bold">Yoko Shiho Gatame</h3>
-  //         <p>Side four corner hold</p>
-  //       </div>
-  //       <div className="border p-4 rounded-lg">
-  //         <h3 className="font-bold">Kami Shiho Gatame</h3>
-  //         <p>Upper four corner hold</p>
-  //       </div>
-  //     </div>
-  //   </div>
-  // );
-  //   }
-  // };
+  // const [content, setContent] = useState<JSX.Element>(() => renderContent());
+
+  useEffect(() => {
+    setSelectedSubCategory(subCategories[selectedCategory][0]);
+  }, [selectedCategory]);
+
+  useEffect(() => {
+    const groupedTechniques = groupBy(
+      data.filter((t) => t.category == selectedCategory),
+      "sub_category"
+    );
+    setTechniquesByCategory(groupedTechniques);
+    console.log("groupedTechniques", groupedTechniques);
+  }, [data, isLoading, error, selectedCategory]);
 
   return (
     <div className="flex h-screen">
       <aside className="w-64 bg-gray-100 p-4">
         <nav>
           <ul className="space-y-2">
-            <li>
-              <button
-                onClick={() => setSelectedCategory("nage-waza")}
-                className={`w-full text-left px-4 py-2 rounded ${
-                  selectedCategory === "nage-waza"
-                    ? "bg-blue-500 text-white"
-                    : "hover:bg-gray-200"
-                }`}
-              >
-                Nage Waza
-              </button>
-            </li>
-            <li>
-              <button
-                onClick={() => setSelectedCategory("osae-komi-waza")}
-                className={`w-full text-left px-4 py-2 rounded ${
-                  selectedCategory === "osae-komi-waza"
-                    ? "bg-blue-500 text-white"
-                    : "hover:bg-gray-200"
-                }`}
-              >
-                Osae Komi Waza
-              </button>
-            </li>
+            {categories.map((category) => (
+              <li key={category}>
+                <button
+                  onClick={() => setSelectedCategory(category)}
+                  className={`w-full text-left px-4 py-2 rounded ${
+                    selectedCategory === category
+                      ? "bg-blue-500 text-white"
+                      : "hover:bg-gray-200"
+                  }`}
+                >
+                  {category}
+                </button>
+              </li>
+            ))}
           </ul>
         </nav>
       </aside>

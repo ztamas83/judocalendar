@@ -1,0 +1,92 @@
+[
+  {
+    "id": "kw-ow-1",
+    "name": "Kesa-gatame",
+    "name_jp": "袈裟固め",
+    "category": "Katame-waza",
+    "sub_category": "Osaekomi-waza",
+    "level": 1,
+    "description": "A technique to hold down the opponent’s upper body under the right side of the chest region by holding his right arm in the left arm from the right side of the opponent lying on his back and gripping the back of his collar with the right hand."
+  },
+  {
+    "id": "kw-ow-2",
+    "name": "Kuzure-kesa-gatame",
+    "name_jp": "崩袈裟固め",
+    "category": "Katame-waza",
+    "sub_category": "Osaekomi-waza",
+    "level": 1,
+    "description": "A technique to hold down the opponent’s upper body under the right side of the chest region by holding his right arm in the left arm from the right side of the opponent lying on his back and inserting the right arm through his left armpit."
+  },
+  {
+    "id": "kw-ow-3",
+    "name": "Ushiro-kesa-gatame",
+    "name_jp": "裏袈裟固め",
+    "category": "Katame-waza",
+    "sub_category": "Osaekomi-waza",
+    "level": 1,
+    "description": "A technique to hold down the opponent’s upper body under the left side of the chest region by putting the left hip on the right side of his body from the right side of the opponent lying on his back, holding his right arm in the right arm and holding his upper body in the left arm."
+  },
+  {
+    "id": "kw-ow-4",
+    "name": "Kata-gatame",
+    "name_jp": "肩固め",
+    "category": "Katame-waza",
+    "sub_category": "Osaekomi-waza",
+    "level": 1,
+    "description": "A technique to hold down the opponent by holding his right arm and neck with the right side of the neck and both arms from the right side of the opponent lying on his back."
+  },
+  {
+    "id": "kw-ow-5",
+    "name": "Kami-shiho-gatame",
+    "name_jp": "上四方固め",
+    "category": "Katame-waza",
+    "sub_category": "Osaekomi-waza",
+    "level": 1,
+    "description": "A technique to hold down the opponent’s upper body under the chest and abdomen region by gripping both sides of his belt with both hands from the top side of his head while he is lying on his back."
+  },
+  {
+    "id": "kw-ow-6",
+    "name": "Kuzure-kami-shiho-gatame",
+    "name_jp": "崩上四方固め",
+    "category": "Katame-waza",
+    "sub_category": "Osaekomi-waza",
+    "level": 1,
+    "description": "A technique to hold down the opponent’s upper body under the chest and abdomen region by holding his right arm in the right arm from the diagonal-right side of his head and gripping the left side of his belt with the left hand while he is lying on his back."
+  },
+  {
+    "id": "kw-sw-1",
+    "name": "Nami-juji-jime",
+    "name_jp": "波胡持",
+    "category": "Katame-waza",
+    "sub_category": "Shime-waza",
+    "level": 1,
+    "description": "A technique to choke the opponent’s neck region by crossing the wrists from the front, gripping his side-collars with both thumbs inside and pushing both hands."
+  },
+  {
+    "id": "kw-sw-2",
+    "name": "Gyaku-juji-jime",
+    "name_jp": "逆十字絞",
+    "category": "Katame-waza",
+    "sub_category": "Shime-waza",
+    "level": 1,
+    "description": "A technique to choke the opponent’s neck region by crossing the wrists from the front gripping his side-collars with four fingers of both hands inside and tightening arms."
+  },
+  {
+    "id": "kw-sw-3",
+    "name": "Kata-juji-jime",
+    "name_jp": "肩十字絞",
+    "category": "Katame-waza",
+    "sub_category": "Shime-waza",
+    "level": 1,
+    "description": "A technique to choke the opponent’s neck region by crossing the wrists from the front gripping his left side-collar with four fingers of the left hand inside and the right side-collar with right thumb inside, pulling the left hand and pushing the right hand."
+  },
+  {
+    "id": "kw-sw-4",
+    "name": "Hadaka-jime",
+    "name_jp": "裸絞",
+    "category": "Katame-waza",
+    "sub_category": "Shime-waza",
+    "level": 1,
+    "description": "A technique to choke the opponent’s neck region without using judogi by putting the right forearm on the opponent’s throat from behind and joining the left arm on it."
+  }
+]

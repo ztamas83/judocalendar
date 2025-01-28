@@ -1,0 +1,92 @@
+[
+  {
+    "id": "nw-kw-1",
+    "name": "Uki-goshi",
+    "name_jp": "浮腰",
+    "category": "Nage-waza",
+    "sub_category": "Koshi-waza",
+    "level": 1,
+    "description": "A technique to throw down the opponent by breaking his balance forward and inserting the right arm through his left armpit while loading him slightly onto the hip and twisting the body."
+  },
+  {
+    "id": "nw-kw-2",
+    "name": "O-goshi",
+    "name_jp": "大腰",
+    "category": "Nage-waza",
+    "sub_category": "Koshi-waza",
+    "level": 1,
+    "description": "A technique to load the opponent onto the back of the hip and throw him down by breaking his balance forward and inserting the right arm through his left armpit while holding his hip and drawing it closer."
+  },
+  {
+    "id": "nw-kw-3",
+    "name": "Koshi-guruma",
+    "name_jp": "腰車",
+    "category": "Nage-waza",
+    "sub_category": "Koshi-waza",
+    "level": 1,
+    "description": "A technique to rotate the opponent on the axis of the hip and throw him down by breaking his balance forward and holding his neck in the right arm while thrusting the hip deeply."
+  },
+  {
+    "id": "nw-kw-4",
+    "name": "Tsurikomi-goshi",
+    "name_jp": "釣込腰",
+    "category": "Nage-waza",
+    "sub_category": "Koshi-waza",
+    "level": 1,
+    "description": "A technique to load the opponent onto the back of the hip and throw him down by breaking his balance forward while gripping his left front-lapel with the right hand and lifting it up."
+  },
+  {
+    "id": "nw-kw-5",
+    "name": "Sode-tsurikomi-goshi",
+    "name_jp": "袖釣込腰",
+    "category": "Nage-waza",
+    "sub_category": "Koshi-waza",
+    "level": 1,
+    "description": "A technique to load the opponent onto the back of the hip and throw him down by breaking his balance forward while gripping his left sleeve with the right hand and lifting it up."
+  },
+  {
+    "id": "nw-kw-6",
+    "name": "Harai-goshi",
+    "name_jp": "払腰",
+    "category": "Nage-waza",
+    "sub_category": "Koshi-waza",
+    "level": 1,
+    "description": "A technique to sweep up the opponent with the right leg and throw him down by breaking his balance forward and loading him onto the back of the right hip."
+  },
+  {
+    "id": "nw-kw-7",
+    "name": "Tsuri-goshi",
+    "name_jp": "釣腰",
+    "category": "Nage-waza",
+    "sub_category": "Koshi-waza",
+    "level": 1,
+    "description": "A technique to load the opponent onto the back of the hip and throw him down by breaking his balance forward and grabbing the back of his belt to lift it up."
+  },
+  {
+    "id": "nw-kw-8",
+    "name": "Hane-goshi",
+    "name_jp": "跳ね腰",
+    "category": "Nage-waza",
+    "sub_category": "Koshi-waza",
+    "level": 1,
+    "description": "A technique to spring up the opponent with the back of the right hip and the right leg and throw him down by breaking his balance forward."
+  },
+  {
+    "id": "nw-kw-9",
+    "name": "Utsuri-goshi",
+    "name_jp": "転腰",
+    "category": "Nage-waza",
+    "sub_category": "Koshi-waza",
+    "level": 1,
+    "description": "A technique to throw down the opponent by counteracting his Nage-waza or other attack, holding and lifting his hip with the right arm and shifting him onto the back of the hip."
+  },
+  {
+    "id": "nw-kw-10",
+    "name": "Ushiro-goshi",
+    "name_jp": "後ろ腰",
+    "category": "Nage-waza",
+    "sub_category": "Koshi-waza",
+    "level": 1,
+    "description": "A technique to throw down the opponent vertically by counteracting his Nage-waza or other attack and holding and lifting his hip."
+  }
+]

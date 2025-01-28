@@ -1,14 +1,11 @@
 // Import the functions you need from the SDKs you need
 import { getApp, getApps, initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import { getFirestore } from "firebase/firestore";
 import {
-  browserSessionPersistence,
-  getAuth,
-  inMemoryPersistence,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
-import { getStorage } from "firebase/storage";
+  getFirestore,
+  initializeFirestore,
+  persistentLocalCache,
+} from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -35,17 +32,20 @@ if (getApps().length === 0) {
   app = getApp();
 }
 // const analytics = getAnalytics(app);
-const db = getFirestore(app);
-const storage = getStorage(app);
+const db = initializeFirestore(app, {
+  localCache: persistentLocalCache({}),
+});
+
+// const storage = getStorage(app);
 const auth = getAuth(app);
-// auth.setPersistence(browserSessionPersistence);
+auth.useDeviceLanguage();
 
-// auth.onAuthStateChanged((user) => {
-//   if (user) {
-//     console.log("authenticated", user);
-//   } else {
-//     console.log("signed out");
-//   }
-// });
+auth.onAuthStateChanged((user) => {
+  if (user) {
+    console.log("authenticated", user);
+  } else {
+    console.log("signed out");
+  }
+});
 
-export { db, storage, auth };
+export { db, auth };

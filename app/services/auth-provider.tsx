@@ -6,6 +6,7 @@ import {
 } from "firebase/auth";
 import { auth as clientAuth } from "~/firebase.client";
 import { useContext, createContext, useEffect, useReducer } from "react";
+import { useNavigate } from "react-router";
 
 const initialState: AuthState = {
   isAuthenticated: false,
@@ -54,26 +55,32 @@ const AuthContext = createContext({
 
 function AuthProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const navigate = useNavigate();
 
   const logout = async () => {
     await clientAuth.signOut();
+    navigate("/");
   };
 
   const loginWithGoogle = async () => {
-    signOut(clientAuth).then(() => console.log("Signed out"));
     const provider = new GoogleAuthProvider();
 
-    signInWithPopup(clientAuth, provider)
-      .then((res) => {
-        console.log("Signed in");
-        dispatch({
-          type: "INITIALISE",
-          payload: { isAuthenticated: true, user: res.user },
-        });
-      })
-      .catch((err) => {
-        console.error("Sign in error", err);
+    await logout();
+    console.log("loginWIthGoogle - Signed out");
+
+    try {
+      const res = await signInWithPopup(clientAuth, provider);
+      console.log("loginWIthGoogle - Signed in");
+      console.log(res);
+      console.log(res.user.uid);
+
+      dispatch({
+        type: "INITIALISE",
+        payload: { isAuthenticated: true, user: res.user },
       });
+    } catch (err) {
+      console.error("Sign in error", err);
+    }
   };
 
   useEffect(() => {
@@ -113,3 +120,19 @@ function AuthProvider({ children }) {
 }
 
 export { AuthContext, AuthProvider };
+
+// Add this new component in the same file
+export function RequireAuth({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, isInitialized } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isInitialized && !isAuthenticated) {
+      navigate("/");
+    }
+  }, [isAuthenticated, isInitialized, navigate]);
+
+  if (!isInitialized) return null;
+
+  return isAuthenticated ? <>{children}</> : null;
+}

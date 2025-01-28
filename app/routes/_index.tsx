@@ -1,8 +1,17 @@
+"use client";
+import { createCookie, type MetaFunction } from "react-router";
+import { Button } from "~/components/ui/button";
 import {
-  createCookie,
-  type LoaderFunctionArgs,
-  type MetaFunction,
-} from "react-router";
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card";
+import { Input } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
+import { LoginForm } from "~/components/login-form";
+import { useAuth } from "~/services/auth-provider";
 
 export const meta: MetaFunction = () => {
   return [
@@ -28,12 +37,14 @@ const authCookie = createCookie("session", {
 //   return token;
 // }
 export default function Index() {
+  const { loginWithGoogle, user } = useAuth();
   return (
     <div className="flex flex-col min-h-screen">
       <div className="flex flex-col items-center justify-center h-screen">
         <h1 className="text-3xl font-bold text-center">
           Welcome to your Judo Calendar
         </h1>
+        {user ? "" : <LoginForm />}
       </div>
     </div>
   );
