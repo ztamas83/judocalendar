@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 
 // Load environment variables from .env file
-dotenv.config();
+dotenv.config({ path: "../.env" });
 
 const projectId = process.env.VITE_FIREBASE_APP_NAME;
 // Your web app's Firebase configuration

@@ -1,22 +1,16 @@
 "use client";
 import { createCookie, type MetaFunction } from "react-router";
-import { Button } from "~/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/card";
-import { Input } from "~/components/ui/input";
-import { Label } from "~/components/ui/label";
 import { LoginForm } from "~/components/login-form";
 import { useAuth } from "~/services/auth-provider";
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "New Remix App" },
-    { name: "description", content: "Welcome to Remix!" },
+    { title: "Your Judo Calendar" },
+    {
+      name: "description",
+      content:
+        "A simple application to keep track of your judo trainings and progress",
+    },
   ];
 };
 

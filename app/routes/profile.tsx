@@ -1,3 +1,4 @@
+import { Card, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import {
   AdditionalUserInfo,
   getAdditionalUserInfo,
@@ -6,9 +7,15 @@ import {
   User,
   UserCredential,
 } from "firebase/auth";
-import { ad } from "node_modules/react-router/dist/development/route-data-Cw8htKcF.mjs";
-import { ClientLoaderFunction, useLoaderData } from "react-router";
+import { DocumentSnapshot } from "firebase/firestore";
+import { useEffect, useState } from "react";
+import { ClientLoaderFunction } from "react-router";
+import { CardContent } from "~/components";
+import { UserData, userConverter } from "~/models/userData";
 import { useAuth } from "~/services/auth-provider";
+import { Collections } from "~/services/firebase-data-service";
+import { useFirestore } from "~/services/firebase-hooks";
+import { useUserData } from "~/services/user-data-hook";
 
 type LoaderData = {
   user: User;
@@ -19,30 +26,64 @@ export const clientLoader: ClientLoaderFunction = async ({ request }) => {};
 
 export default function Profile() {
   const { user } = useAuth();
+  const fb = useFirestore();
 
-  const additionalInfo = getAdditionalUserInfo({
-    user: user,
-    providerId: "google.com",
-    operationType: OperationType.SIGN_IN,
-  } as UserCredential);
+  const [userData, setUserdata] = useUserData(user);
 
-  if (!user) {
+  if (!userData) {
     return <div>User data not available</div>;
   }
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
-      <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+      <Card>
+        <CardContent>
+          <div className="flex items-center flex-col">
+            <img
+              src={user.photoURL}
+              alt={user.uid}
+              className="w-24 h-24 rounded-full mb-4"
+            />
+            <h1 className="text-2xl font-bold mb-2">
+              {user.displayName} {userData?.role == "admin" ? "(Admin)" : ""}
+            </h1>
+            <div className="p-2 mb-2">
+              Participations: {userData?.participations}
+            </div>
+            <div className="w-full">
+              <FormControl fullWidth>
+                <InputLabel id="demo-simple-select-label">
+                  Current belt
+                </InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  defaultValue={6}
+                  value={userData.currentBelt}
+                  label="Current belt"
+                  onChange={(event) =>
+                    setUserdata({
+                      ...userData,
+                      currentBelt: +event.target.value,
+                    })
+                  }
+                >
+                  <MenuItem value={6}>White</MenuItem>
+                  <MenuItem value={5}>Yellow</MenuItem>
+                  <MenuItem value={4}>Orange</MenuItem>
+                  <MenuItem value={3}>Green</MenuItem>
+                  <MenuItem value={2}>Blue</MenuItem>
+                  <MenuItem value={1}>Brown</MenuItem>
+                </Select>
+              </FormControl>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+      {/* <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
         <div className="flex flex-col items-center">
-          <img
-            src={user.photoURL}
-            alt={user.uid}
-            className="w-24 h-24 rounded-full mb-4"
-          />
-          <h1 className="text-2xl font-bold mb-2">{user.displayName}</h1>
-          <p className="text-gray-600">{user.email}</p>
-          <p className="text-gray-600">{user.uid}</p>
+
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

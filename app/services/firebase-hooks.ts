@@ -1,15 +1,33 @@
 import { db } from "~/firebase.client";
-import {
-  doc,
-  onSnapshot,
-  setDoc,
-  collection,
-  addDoc,
-} from "firebase/firestore";
+import { doc, onSnapshot, setDoc, collection } from "firebase/firestore";
 import { addNewTraining, Collections } from "./firebase-data-service";
+import { UserData, userConverter } from "~/models/userData";
+
 export const useFirestore = () => {
-  const getDocument = (collection: Collections, docId: string, onUpdate) => {
-    onSnapshot(doc(db, collection, docId), onUpdate);
+  const getDocument = (
+    collection: Collections,
+    docId: string,
+    onUpdate: (data: any) => void
+  ) => {
+    return onSnapshot(doc(db, collection, docId), onUpdate);
+  };
+
+  const updateDocument = (
+    collection: Collections,
+    docId: string,
+    data: any,
+    onError?: (err: Error) => void
+  ) => {
+    switch (collection) {
+      case Collections.USERS:
+        setDoc(
+          doc(db, collection, docId),
+          userConverter.toFirestore(data as UserData),
+          {
+            merge: true,
+          }
+        );
+    }
   };
 
   const addocument = (
@@ -41,5 +59,5 @@ export const useFirestore = () => {
     return unsubscribe;
   };
 
-  return { getDocument, addocument, getCollection };
+  return { getDocument, addocument, updateDocument, getCollection };
 };

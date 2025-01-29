@@ -4,14 +4,25 @@ import {
   signOut,
   User,
 } from "firebase/auth";
-import { auth as clientAuth } from "~/firebase.client";
-import { useContext, createContext, useEffect, useReducer } from "react";
+import { auth as clientAuth, db } from "~/firebase.client";
+import {
+  useContext,
+  createContext,
+  useEffect,
+  useReducer,
+  useState,
+} from "react";
 import { useNavigate } from "react-router";
+import { useFirestore } from "./firebase-hooks";
+import { UserData, userConverter } from "~/models/userData";
+import { Collections } from "./firebase-data-service";
+import { doc, DocumentSnapshot } from "firebase/firestore";
+import { DateTime } from "luxon";
 
 const initialState: AuthState = {
   isAuthenticated: false,
   isInitialized: false,
-  user: null,
+  user: undefined,
 };
 
 interface AuthStateDispatch {
@@ -22,7 +33,7 @@ interface AuthStateDispatch {
 interface AuthState {
   isAuthenticated: boolean;
   isInitialized?: boolean;
-  user: User | null;
+  user: User | undefined;
 }
 
 const reducer = (state: AuthState, action: AuthStateDispatch) => {
@@ -56,6 +67,7 @@ const AuthContext = createContext({
 function AuthProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const navigate = useNavigate();
+  const fs = useFirestore();
 
   const logout = async () => {
     await clientAuth.signOut();
@@ -93,19 +105,27 @@ function AuthProvider({ children }) {
       } else {
         dispatch({
           type: "INITIALISE",
-          payload: { isAuthenticated: false, user: null },
+          payload: { isAuthenticated: false, user: undefined },
         });
       }
       dispatch({
         type: "INITIALISE",
         payload: {
           isAuthenticated: !!user,
-          user: user,
+          user: user ?? undefined,
         },
       });
     });
     return unsubscribe;
   }, [dispatch]);
+
+  useEffect(() => {
+    if (state.isAuthenticated && state.user) {
+      fs.updateDocument(Collections.USERS, state.user.uid, {
+        lastLogin: DateTime.now(),
+      });
+    }
+  }, [state]);
 
   // const value = {
   //   signInWithGoogle,
@@ -124,6 +144,7 @@ export { AuthContext, AuthProvider };
 // Add this new component in the same file
 export function RequireAuth({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isInitialized } = useAuth();
+
   const navigate = useNavigate();
 
   useEffect(() => {

@@ -2,18 +2,28 @@ import { DateTime, Interval } from "luxon";
 import { useEffect, useMemo, useState } from "react";
 import useFirebaseData, { Collections } from "~/services/firebase-data-service";
 import { Technique } from "./techniques";
-import { Button, Card, CardContent, Grid2, Paper } from "@mui/material";
+import {
+  Button,
+  Card,
+  CardContent,
+  FormControlLabel,
+  Grid2,
+  Paper,
+  Stack,
+} from "@mui/material";
 import { CardTitle } from "~/components";
 import { styled } from "@mui/material/styles";
 import { ConfirmationDialogRaw } from "~/modules/new-training";
 import { useFirestore } from "~/services/firebase-hooks";
-import { DocumentSnapshot } from "firebase/firestore";
 import { QuerySnapshot } from "firebase-admin/firestore";
 import { useAuth } from "~/services/auth-provider";
+import { Checkbox } from "~/components/";
+import { useUserData } from "~/services/user-data-hook";
 
 export interface TrainingData {
   id?: string;
   date: DateTime;
+  group?: string;
   duration?: number; //duration in minutes
   notes?: string;
   techniques: string[];
@@ -50,6 +60,7 @@ export default function Trainings() {
   const [error, setError] = useState<Error>();
 
   const fb = useFirestore();
+  const [userData, setUserdata] = useUserData(user);
 
   const [trainings, setTrainings] = useState<TrainingData[]>([]);
 
@@ -65,14 +76,6 @@ export default function Trainings() {
       unsubscribe();
     };
   }, []);
-
-  // const { data, isLoading, error } = useFirebaseData<TrainingData>(
-  //   "trainings",
-  //   mapFromFirebase,
-  //   () => {
-  //     console.log("data changed");
-  //   }
-  // );
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogDate, setDialogDate] = useState<DateTime>(DateTime.now());
@@ -113,19 +116,46 @@ export default function Trainings() {
     );
   };
 
+  const showEvents = (day: DateTime) => {
+    const events = trainings.filter((t) => t.date.hasSame(day, "day"));
+    //console.log(events);
+  };
+
+  const handleParticipation = (checked: boolean, trainingId: string) => {
+    console.log(trainingId, checked);
+    if (checked) {
+      setUserdata({
+        ...userData,
+        participations: userData.participations.add(trainingId),
+      });
+    } else {
+      userData.participations.delete(trainingId);
+
+      setUserdata({
+        ...userData,
+        participations: userData.participations,
+      });
+    }
+  };
+
+  if (techniquesLoading) {
+    return <p>Loading...</p>;
+  }
+
   if (error) {
     return <p>Error fetching training data: {error.message}</p>;
   }
 
   return (
-    <div className="p-4">
+    // top row with selector is 36px, rest is 100%
+    <div className="p-3 overflow-x-auto max-w-[2000px] grid grid-rows-[36px,100fr] grid-cols-1">
       <ConfirmationDialogRaw
         open={dialogOpen}
         date={dialogDate}
         // techniques={techniques}
         onClose={handleClose}
       />
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-bottom justify-center mb-6 min-w-full h-9 gap-20">
         <Button
           onClick={() => navigateWeek("prev")}
           className="px-4 py-2 bg-blue-500 text-white rounded"
@@ -145,12 +175,13 @@ export default function Trainings() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-7 gap-4">
+      <div className="grid grid-cols-7 gap-3">
         {daysInWeek.map((day) => (
           <Card
             key={day.toISO()}
-            className="border rounded p-2 min-h-[200px]"
+            className="border rounded p-1.5 min-h-[200px] max-x-auto min-w-[200px]"
             variant="outlined"
+            onClick={() => showEvents(day)}
           >
             <CardTitle className="font-bold mb-2 text-md">
               <div className="flex justify-between">
@@ -164,7 +195,10 @@ export default function Trainings() {
                   </Button>
                 ) : null}
               </div>
-              <div className="text-sm text-gray-500">
+              <div
+                className="text-sm text-gray-500"
+                onClick={() => showEvents(day)}
+              >
                 {day.toFormat("MMM d")}
               </div>
             </CardTitle>
@@ -177,13 +211,42 @@ export default function Trainings() {
                   .map((t) => (
                     <Grid2>
                       <Item>
-                        <Button
+                        <Card variant="outlined" className="p-1 min-w-auto">
+                          <CardContent>
+                            <div className="grid grid-cols-1 grid-rows-[auto, 24px] gap-2">
+                              <Stack className="grid-row">
+                                <div className="font-bold">
+                                  {t.group ?? "Training"} -{" "}
+                                  {t.date.toFormat("HH:mm")}
+                                </div>
+                                <div className="text-gray-500 grid grid-cols-1 text-xs text-left">
+                                  {techniques
+                                    .filter((tech) =>
+                                      t.techniques.includes(tech.id)
+                                    )
+                                    .map((t) => {
+                                      return <div>- {t.name}</div>;
+                                    })}
+                                </div>
+                              </Stack>
+                              <div className="text-left mt-auto">
+                                <Checkbox
+                                  label="I was there"
+                                  id={t.id}
+                                  checked={userData.participations.has(t.id)}
+                                  onChange={(event) =>
+                                    handleParticipation(event, t.id!)
+                                  }
+                                ></Checkbox>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                        {/* <Button
                           key={t.id}
                           className="bg-gray-100 rounded"
                           onClick={() => setSelectedEvent(t)}
-                        >
-                          {t.date.toFormat("HH:mm")}
-                        </Button>
+                        ></Button> */}
                       </Item>
                     </Grid2>
                   ))}
@@ -192,24 +255,6 @@ export default function Trainings() {
           </Card>
         ))}
       </div>
-      <div>
-        <div className="p-10" />
-        <div className="grid grid-cols-3 gap-4">
-          {selectedEvent && (
-            <div className="border p-4 rounded-md">
-              <h3 className="font-bold">
-                {selectedEvent.date.toFormat("yyyy-MM-dd HH:mm")}
-              </h3>
-              <p>
-                {techniques
-                  .filter((t) => selectedEvent.techniques.includes(t.id))
-                  .map((t) => t.name)
-                  .join(", ")}
-              </p>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
+    </div> // end of 2 rows grid
   );
 }

@@ -15,6 +15,7 @@ import { QueryDocumentSnapshot } from "firebase-admin/firestore";
 export enum Collections {
   TRAININGS = "trainings",
   TECHNIQUES = "techniques",
+  USERS = "users",
 }
 
 // Firestore data converter

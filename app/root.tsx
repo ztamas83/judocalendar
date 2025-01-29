@@ -1,6 +1,6 @@
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
 import type { LinksFunction } from "react-router";
-import { AuthProvider, RequireAuth } from "~/services/auth-provider";
+import { AuthProvider } from "~/services/auth-provider";
 import Header from "~/modules/header";
 import "./tailwind.css";
 
