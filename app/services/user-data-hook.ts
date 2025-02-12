@@ -45,6 +45,7 @@ export function useUserData(): [
       console.warn("No value provided");
       return;
     }
+    console.log(value);
     fb.updateDocument(Collections.USERS, authenticatedUser.user!.uid, value);
   }
 

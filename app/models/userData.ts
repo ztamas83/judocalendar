@@ -22,9 +22,8 @@ export const userConverter = {
       participations: user.participations
         ? Array.from(user.participations)
         : [],
-      lastLogin: Timestamp.fromMillis(user.lastLogin.toMillis()),
       updatedAt: Timestamp.now(),
-    };
+    } as any;
 
     if (user.currentBelt > 0) {
       firestoreData.currentBelt = user.currentBelt;

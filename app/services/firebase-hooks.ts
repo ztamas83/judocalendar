@@ -30,7 +30,7 @@ export const useFirestore = () => {
     }
   };
 
-  const addocument = (
+  const addDocument = (
     collection: Collections,
     document: any,
     onError: (err: Error) => void
@@ -59,5 +59,5 @@ export const useFirestore = () => {
     return unsubscribe;
   };
 
-  return { getDocument, addocument, updateDocument, getCollection };
+  return { getDocument, addDocument, updateDocument, getCollection };
 };

@@ -1,24 +1,16 @@
 import { DateTime, Interval } from "luxon";
-import { useDeferredValue, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import useFirebaseData, { Collections } from "~/services/firebase-data-service";
 import { Technique } from "./techniques";
-import {
-  Button,
-  Card,
-  CardContent,
-  FormControlLabel,
-  Grid2,
-  Paper,
-  Stack,
-} from "@mui/material";
+import { Card, CardContent, Stack } from "@mui/material";
 import { CardTitle } from "~/components";
-import { ConfirmationDialogRaw } from "~/modules/new-training";
 import { useFirestore } from "~/services/firebase-hooks";
 import { QuerySnapshot } from "firebase-admin/firestore";
-import { useAuth } from "~/services/auth-provider";
-import { Checkbox } from "~/components/";
+import { Checkbox } from "~/components/ui/checkbox";
 import { useUserData } from "~/services/user-data-hook";
-
+import { Button } from "~/components/ui/button";
+import NewTrainingDialog from "~/components/new-training2";
+import { toast } from "sonner";
 
 export interface TrainingData {
   id?: string;
@@ -69,11 +61,25 @@ export default function Trainings() {
   const [dialogOpen, setDialogOpen] = useState(false);
   // const [dialogDate, setDialogDate] = useState<DateTime>(DateTime.now());
 
-  function handleClose(date?: DateTime) {
-    console.log("handleClose", date);
-    setDialogOpen(false);
-    setSelectedDate(date ?? DateTime.now());
+  function handleClose(date: DateTime, techniques: string[]) {
+    console.log("handleClose", date, techniques);
+    fb.addDocument(
+      Collections.TRAININGS,
+      {
+        date,
+        duration: 0,
+        notes: "",
+        techniques,
+      } as TrainingData,
+      setError
+    );
   }
+
+  useEffect(() => {
+    if (error) {
+      toast(error.message);
+    }
+  }, [error]);
 
   function handleAddTrainingClick(day: DateTime) {
     setDialogOpen(true);
@@ -131,13 +137,13 @@ export default function Trainings() {
   return (
     // top row with selector is 36px, rest is 100%
     <div className="p-3 overflow-x-auto max-w-[2000px] grid grid-rows-[36px,100fr] grid-cols-1">
-      <ConfirmationDialogRaw
+      {/* <ConfirmationDialogRaw
         date={dialogDate}
         open={dialogOpen}
         date={dialogDate}
         // techniques={techniques}
         onClose={handleClose}
-      />
+      /> */}
       <div className="flex items-bottom justify-center mb-6 min-w-full h-9 gap-20">
         <Button
           onClick={() => navigateWeek("prev")}
@@ -170,9 +176,13 @@ export default function Trainings() {
               <div className="flex justify-between">
                 {day.toFormat("cccc")}
                 {isAdminUser ? (
-                  <Button onClick={() => handleAddTrainingClick(day)}>
-                    Add
-                  </Button>
+                  // <Button onClick={() => handleAddTrainingClick(day)}>
+                  //   Add
+                  // </Button>
+                  <NewTrainingDialog
+                    date={day}
+                    handleSave={handleClose}
+                  ></NewTrainingDialog>
                 ) : null}
               </div>
               <div
@@ -195,8 +205,7 @@ export default function Trainings() {
                           <div className="grid grid-cols-1 grid-rows-[auto, 24px] gap-2">
                             <Stack className="grid-row">
                               <div className="font-bold">
-                                {t.group ?? "Training"} -{" "}
-                                {t.date.toFormat("HH:mm")}
+                                {t.group ?? "Training"}
                               </div>
                               <div className="text-gray-500 grid grid-cols-1 text-xs text-left">
                                 {techniques
@@ -210,26 +219,32 @@ export default function Trainings() {
                             </Stack>
                             <div className="text-left mt-auto">
                               {isLoggedIn ? (
-                                <Checkbox
-                                  label="I was there"
-                                  id={t.id}
-                                  checked={
-                                    userData.participations?.has(t.id) ?? false
-                                  }
-                                  onChange={(event) =>
-                                    handleParticipation(event, t.id!)
-                                  }
-                                ></Checkbox>
+                                <>
+                                  <label
+                                    htmlFor={t.id}
+                                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                  >
+                                    I was there
+                                  </label>
+                                  <Checkbox
+                                    id={t.id}
+                                    onCheckedChange={(state) =>
+                                      handleParticipation(
+                                        state.valueOf() ? true : false,
+                                        t.id
+                                      )
+                                    }
+                                    checked={
+                                      userData.participations?.has(t.id) ??
+                                      false
+                                    }
+                                  ></Checkbox>
+                                </>
                               ) : null}
                             </div>
                           </div>
                         </CardContent>
                       </Card>
-                      {/* <Button
-                          key={t.id}
-                          className="bg-gray-100 rounded"
-                          onClick={() => setSelectedEvent(t)}
-                        ></Button> */}
                     </div>
                   ))}
               </div>

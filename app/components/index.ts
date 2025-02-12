@@ -1,3 +1,3 @@
 export * from "./login-form";
 export * from "./ui/card";
-export * from "./ui/Checkbox";
+export * from "./ui/checkbox";
