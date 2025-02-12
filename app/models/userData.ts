@@ -19,11 +19,12 @@ export interface UserData {
 export const userConverter = {
   toFirestore: (user: UserData): any => {
     const firestoreData = {
-      participations: user.participations
-        ? Array.from(user.participations)
-        : [],
       updatedAt: Timestamp.now(),
     } as any;
+
+    if (user.participations) {
+      firestoreData.participations = Array.from(user.participations);
+    }
 
     if (user.currentBelt > 0) {
       firestoreData.currentBelt = user.currentBelt;

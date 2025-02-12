@@ -22,7 +22,7 @@ export default function Profile() {
   const [isLoggedin, userData, setUserdata] = useUserData(user);
   const [editMode, setEditMode] = useState(false);
 
-  if (!userData) {
+  if (!userData || !isLoggedin) {
     return <div>User data not available</div>;
   }
   return (
@@ -53,9 +53,8 @@ export default function Profile() {
                 <Select
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
-                  defaultValue={6}
                   disabled={!editMode}
-                  value={userData.currentBelt}
+                  value={userData.currentBelt ?? 6}
                   label="Current belt"
                   onChange={(event) =>
                     setUserdata({
