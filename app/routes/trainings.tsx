@@ -1,5 +1,5 @@
 import { DateTime, Interval } from "luxon";
-import { useEffect, useMemo, useState } from "react";
+import { useDeferredValue, useEffect, useMemo, useState } from "react";
 import useFirebaseData, { Collections } from "~/services/firebase-data-service";
 import { Technique } from "./techniques";
 import {
@@ -12,13 +12,13 @@ import {
   Stack,
 } from "@mui/material";
 import { CardTitle } from "~/components";
-import { styled } from "@mui/material/styles";
 import { ConfirmationDialogRaw } from "~/modules/new-training";
 import { useFirestore } from "~/services/firebase-hooks";
 import { QuerySnapshot } from "firebase-admin/firestore";
 import { useAuth } from "~/services/auth-provider";
 import { Checkbox } from "~/components/";
 import { useUserData } from "~/services/user-data-hook";
+
 
 export interface TrainingData {
   id?: string;
@@ -29,17 +29,6 @@ export interface TrainingData {
   techniques: string[];
   // Add other fields as needed
 }
-
-const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: "#fff",
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  textAlign: "center",
-  color: theme.palette.text.secondary,
-  ...theme.applyStyles("dark", {
-    backgroundColor: "#1A2027",
-  }),
-}));
 
 function mapFromFirebase(doc: any): TrainingData {
   const data = doc.data();
@@ -54,13 +43,13 @@ function mapFromFirebase(doc: any): TrainingData {
 }
 
 export default function Trainings() {
-  const { user } = useAuth();
   const [selectedDate, setSelectedDate] = useState(DateTime.now());
   const [selectedEvent, setSelectedEvent] = useState<TrainingData | null>(null);
   const [error, setError] = useState<Error>();
 
   const fb = useFirestore();
-  const [userData, setUserdata] = useUserData(user);
+  const [isLoggedIn, userData, setUserdata] = useUserData();
+  const isAdminUser = useMemo(() => userData.role == "admin", [userData]);
 
   const [trainings, setTrainings] = useState<TrainingData[]>([]);
 
@@ -78,7 +67,7 @@ export default function Trainings() {
   }, []);
 
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [dialogDate, setDialogDate] = useState<DateTime>(DateTime.now());
+  // const [dialogDate, setDialogDate] = useState<DateTime>(DateTime.now());
 
   function handleClose(date?: DateTime) {
     console.log("handleClose", date);
@@ -86,12 +75,7 @@ export default function Trainings() {
     setSelectedDate(date ?? DateTime.now());
   }
 
-  function renderDialog(day: DateTime) {
-    setDialogDate(day);
-    setDialogOpen(true);
-  }
-
-  function handleOpen() {
+  function handleAddTrainingClick(day: DateTime) {
     setDialogOpen(true);
   }
 
@@ -125,14 +109,12 @@ export default function Trainings() {
     console.log(trainingId, checked);
     if (checked) {
       setUserdata({
-        ...userData,
         participations: userData.participations.add(trainingId),
       });
     } else {
       userData.participations.delete(trainingId);
 
       setUserdata({
-        ...userData,
         participations: userData.participations,
       });
     }
@@ -150,6 +132,7 @@ export default function Trainings() {
     // top row with selector is 36px, rest is 100%
     <div className="p-3 overflow-x-auto max-w-[2000px] grid grid-rows-[36px,100fr] grid-cols-1">
       <ConfirmationDialogRaw
+        date={dialogDate}
         open={dialogOpen}
         date={dialogDate}
         // techniques={techniques}
@@ -186,11 +169,8 @@ export default function Trainings() {
             <CardTitle className="font-bold mb-2 text-md">
               <div className="flex justify-between">
                 {day.toFormat("cccc")}
-                {user ? (
-                  <Button
-                    onClick={() => renderDialog(day)}
-                    disabled={user ? false : true}
-                  >
+                {isAdminUser ? (
+                  <Button onClick={() => handleAddTrainingClick(day)}>
                     Add
                   </Button>
                 ) : null}
@@ -203,54 +183,56 @@ export default function Trainings() {
               </div>
             </CardTitle>
             <CardContent>
-              <Grid2 container spacing={1} columns={2}>
+              <div className="grid grid-cols-1">
                 {trainings
                   .filter((t) => {
                     return t.date.isValid && t.date.hasSame(day, "day");
                   })
                   .map((t) => (
-                    <Grid2>
-                      <Item>
-                        <Card variant="outlined" className="p-1 min-w-auto">
-                          <CardContent>
-                            <div className="grid grid-cols-1 grid-rows-[auto, 24px] gap-2">
-                              <Stack className="grid-row">
-                                <div className="font-bold">
-                                  {t.group ?? "Training"} -{" "}
-                                  {t.date.toFormat("HH:mm")}
-                                </div>
-                                <div className="text-gray-500 grid grid-cols-1 text-xs text-left">
-                                  {techniques
-                                    .filter((tech) =>
-                                      t.techniques.includes(tech.id)
-                                    )
-                                    .map((t) => {
-                                      return <div>- {t.name}</div>;
-                                    })}
-                                </div>
-                              </Stack>
-                              <div className="text-left mt-auto">
+                    <div className="grid">
+                      <Card variant="outlined" className="p-1 min-w-auto">
+                        <CardContent>
+                          <div className="grid grid-cols-1 grid-rows-[auto, 24px] gap-2">
+                            <Stack className="grid-row">
+                              <div className="font-bold">
+                                {t.group ?? "Training"} -{" "}
+                                {t.date.toFormat("HH:mm")}
+                              </div>
+                              <div className="text-gray-500 grid grid-cols-1 text-xs text-left">
+                                {techniques
+                                  .filter((tech) =>
+                                    t.techniques.includes(tech.id)
+                                  )
+                                  .map((t) => {
+                                    return <div>- {t.name}</div>;
+                                  })}
+                              </div>
+                            </Stack>
+                            <div className="text-left mt-auto">
+                              {isLoggedIn ? (
                                 <Checkbox
                                   label="I was there"
                                   id={t.id}
-                                  checked={userData.participations.has(t.id)}
+                                  checked={
+                                    userData.participations?.has(t.id) ?? false
+                                  }
                                   onChange={(event) =>
                                     handleParticipation(event, t.id!)
                                   }
                                 ></Checkbox>
-                              </div>
+                              ) : null}
                             </div>
-                          </CardContent>
-                        </Card>
-                        {/* <Button
+                          </div>
+                        </CardContent>
+                      </Card>
+                      {/* <Button
                           key={t.id}
                           className="bg-gray-100 rounded"
                           onClick={() => setSelectedEvent(t)}
                         ></Button> */}
-                      </Item>
-                    </Grid2>
+                    </div>
                   ))}
-              </Grid2>
+              </div>
             </CardContent>
           </Card>
         ))}

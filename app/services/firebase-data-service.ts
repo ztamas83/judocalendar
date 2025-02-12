@@ -10,7 +10,6 @@ import {
 import { db } from "~/firebase.client"; // Assuming you have your Firebase initialization in a separate file
 import { TrainingData } from "~/routes/trainings";
 import { DateTime } from "luxon";
-import { QueryDocumentSnapshot } from "firebase-admin/firestore";
 
 export enum Collections {
   TRAININGS = "trainings",

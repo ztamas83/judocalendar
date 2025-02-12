@@ -4,8 +4,9 @@ import {
   getFirestore,
   initializeFirestore,
   persistentLocalCache,
+  connectFirestoreEmulator,
 } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
+import { getAuth, connectAuthEmulator } from "firebase/auth";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -38,6 +39,14 @@ const db = initializeFirestore(app, {
 
 // const storage = getStorage(app);
 const auth = getAuth(app);
+
+if (import.meta.env.VITE_FIREBASE_LOCAL === "1") {
+  console.log("using local emulator");
+  connectAuthEmulator(auth, "http://localhost:9099");
+  connectFirestoreEmulator(db, "localhost", 9080);
+} else {
+  console.log("using remote server");
+}
 auth.useDeviceLanguage();
 
 auth.onAuthStateChanged((user) => {

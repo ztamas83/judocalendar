@@ -1,21 +1,12 @@
 import { Card, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
-import {
-  AdditionalUserInfo,
-  getAdditionalUserInfo,
-  GoogleAuthProvider,
-  OperationType,
-  User,
-  UserCredential,
-} from "firebase/auth";
-import { DocumentSnapshot } from "firebase/firestore";
-import { useEffect, useState } from "react";
+import { AdditionalUserInfo, User } from "firebase/auth";
+import { useState } from "react";
 import { ClientLoaderFunction } from "react-router";
 import { CardContent } from "~/components";
-import { UserData, userConverter } from "~/models/userData";
 import { useAuth } from "~/services/auth-provider";
-import { Collections } from "~/services/firebase-data-service";
 import { useFirestore } from "~/services/firebase-hooks";
 import { useUserData } from "~/services/user-data-hook";
+import { EditIcon } from "@mui/icons-material";
 
 type LoaderData = {
   user: User;
@@ -28,7 +19,8 @@ export default function Profile() {
   const { user } = useAuth();
   const fb = useFirestore();
 
-  const [userData, setUserdata] = useUserData(user);
+  const [isLoggedin, userData, setUserdata] = useUserData(user);
+  const [editMode, setEditMode] = useState(false);
 
   if (!userData) {
     return <div>User data not available</div>;
@@ -37,13 +29,17 @@ export default function Profile() {
     <div className="flex flex-col items-center justify-center min-h-screen">
       <Card>
         <CardContent>
-          <div className="flex items-center flex-col">
-            <img
-              src={user.photoURL}
-              alt={user.uid}
-              className="w-24 h-24 rounded-full mb-4"
-            />
-            <h1 className="text-2xl font-bold mb-2">
+          <div className="grid grid-cols-1 grid-rows-auto">
+            <div className="grid grid-cols-3">
+              <div />
+              <img
+                src={user.photoURL}
+                alt={user.uid}
+                className="w-24 h-24 rounded-full mb-4"
+              />
+              <div className="grid text-right">Edit</div>
+            </div>
+            <h1 className="grid text-2xl text-center font-bold mb-2">
               {user.displayName} {userData?.role == "admin" ? "(Admin)" : ""}
             </h1>
             <div className="p-2 mb-2">
@@ -58,11 +54,11 @@ export default function Profile() {
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
                   defaultValue={6}
+                  disabled={!editMode}
                   value={userData.currentBelt}
                   label="Current belt"
                   onChange={(event) =>
                     setUserdata({
-                      ...userData,
                       currentBelt: +event.target.value,
                     })
                   }

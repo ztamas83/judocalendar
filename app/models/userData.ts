@@ -1,5 +1,9 @@
 import { DateTime } from "luxon";
-import { Timestamp, DocumentSnapshot } from "firebase/firestore";
+import {
+  Timestamp,
+  DocumentSnapshot,
+  SnapshotOptions,
+} from "firebase/firestore";
 
 export interface UserData {
   id: string;
@@ -13,29 +17,36 @@ export interface UserData {
 
 // Firestore data converter
 export const userConverter = {
-  toFirestore: (user: UserData) => {
-    return {
+  toFirestore: (user: UserData): any => {
+    const firestoreData = {
       participations: user.participations
         ? Array.from(user.participations)
         : [],
-      role: user.role ?? "user",
-      currentBelt: user.currentBelt ?? 5,
       lastLogin: Timestamp.fromMillis(user.lastLogin.toMillis()),
       updatedAt: Timestamp.now(),
     };
+
+    if (user.currentBelt > 0) {
+      firestoreData.currentBelt = user.currentBelt;
+    }
+    return firestoreData;
   },
-  fromFirestore: (snapshot: DocumentSnapshot, options?): UserData => {
+  fromFirestore: (
+    snapshot: DocumentSnapshot,
+    options?: SnapshotOptions
+  ): UserData => {
     const data = snapshot.data(options);
+    console.log(data);
     if (!data) {
       throw new Error("Invalid data");
     }
     return {
       id: snapshot.id,
-      role: data.role ?? "user",
-      currentBelt: data.currentBelt,
+      role: data.role ?? "unknown",
+      currentBelt: data.currentBelt ?? -1,
       participations: new Set(data.participations ?? []),
       lastLogin: data.lastLogin,
-      createdAt: DateTime.fromJSDate(data.createdAt.toDate()),
+      createdAt: DateTime.fromJSDate(data.createdAt?.toDate() ?? 0),
       // Map other fields as needed
     };
   },

@@ -30,14 +30,7 @@ export interface Technique {
   sub_category: string;
   level: number;
   description: string;
-  // Add other fields as needed
 }
-
-// export async function loader() {
-//   return {
-//     techniques: await useFirebaseData<Technique>("techniques"),
-//   };
-// }
 
 function groupBy(data: any[], key: string): { [key: string]: any[] } {
   return data.reduce(function (rv, x) {
@@ -48,22 +41,43 @@ function groupBy(data: any[], key: string): { [key: string]: any[] } {
 
 export default function Techniques() {
   const { data, isLoading, error } = useFirebaseData<Technique>("techniques");
-  const { categories, subCategories } = useLoaderData<TechniqueCategories>();
-  const [selectedCategory, setSelectedCategory] = useState<string>(
-    categories[0]
-  );
-  const [selectedSubCategory, setSelectedSubCategory] = useState<string>(
-    subCategories[selectedCategory][0]
-  );
+
+  const [selectedCategory, setSelectedCategory] = useState<string>();
+  const [selectedSubCategory, setSelectedSubCategory] = useState<string>("");
+  const [categoryData, setCategoryData] = useState<TechniqueCategories>();
+
+  useEffect(() => {
+    if (data && !isLoading) {
+      const categories = new Set<string>();
+      const subCategories: { [key: string]: Set<string> } = {};
+
+      data.forEach((doc) => {
+        const category = doc.category;
+        categories.add(category);
+        if (!subCategories[category]) {
+          subCategories[category] = new Set<string>();
+        }
+        subCategories[category].add(doc.sub_category);
+      });
+
+      console.log("Categories:", categories);
+      console.log("Sub-categories:", subCategories);
+
+      setCategoryData({
+        categories: Array.from(categories),
+        subCategories: Object.keys(subCategories).reduce((dict, key) => {
+          dict[key] = Array.from(subCategories[key]);
+          return dict;
+        }, {} as { [key: string]: string[] }),
+      });
+    }
+  }, [data, isLoading]);
+
+  // const categoryData = useLoaderData<TechniqueCategories>();
 
   const [techniquesByCategory, setTechniquesByCategory] = useState<{
     [key: string]: Technique[];
-  }>(
-    groupBy(
-      data.filter((t) => t.category == selectedCategory),
-      "sub_category"
-    )
-  );
+  }>();
 
   const renderContent = () => {
     if (isLoading) {
@@ -79,14 +93,14 @@ export default function Techniques() {
       setSelectedSubCategory(newValue);
     };
 
-    return (
+    return categoryData && selectedCategory ? (
       <div className="p-6">
         <Tabs
           value={selectedSubCategory}
           onChange={handleChange}
           aria-label="basic tabs example"
         >
-          {subCategories[selectedCategory].map((sc) => (
+          {categoryData.subCategories[selectedCategory].map((sc) => (
             <Tab label={sc} value={sc} />
           ))}
         </Tabs>
@@ -98,7 +112,7 @@ export default function Techniques() {
           className="p-4"
         >
           <List>
-            {techniquesByCategory[selectedSubCategory]?.map((technique) => (
+            {techniquesByCategory![selectedSubCategory]?.map((technique) => (
               <ListItem>
                 <ListItemText
                   primary={technique.name + " " + technique.name_jp}
@@ -109,13 +123,15 @@ export default function Techniques() {
           </List>
         </div>
       </div>
-    );
+    ) : null;
   };
 
   // const [content, setContent] = useState<JSX.Element>(() => renderContent());
 
   useEffect(() => {
-    setSelectedSubCategory(subCategories[selectedCategory][0]);
+    if (categoryData && selectedCategory) {
+      setSelectedSubCategory(categoryData?.subCategories[selectedCategory][0]);
+    }
   }, [selectedCategory]);
 
   useEffect(() => {
@@ -132,7 +148,7 @@ export default function Techniques() {
       <aside className="w-64 bg-gray-100 p-4">
         <nav>
           <ul className="space-y-2">
-            {categories.map((category) => (
+            {categoryData?.categories.map((category) => (
               <li key={category}>
                 <button
                   onClick={() => setSelectedCategory(category)}
