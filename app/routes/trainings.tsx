@@ -12,6 +12,44 @@ import { Button } from "~/components/ui/button";
 import NewTrainingDialog from "~/components/new-training2";
 import { toast } from "sonner";
 
+import {
+  collection,
+  getDoc,
+  Timestamp,
+  doc,
+  writeBatch,
+} from "firebase/firestore";
+import { db } from "~/firebase.client"; // Assuming you have your Firebase initialization in a separate fil
+
+async function addNormalizedParticipation(userId: string, trainingId: string) {
+  // Add normalized participation data to user data
+
+  const trainingData = await getDoc(doc(db, "trainings", trainingId));
+
+  if (trainingData.exists()) {
+    const data = trainingData.data();
+    if (data) {
+      console.log("techniques", data.techniques);
+      const batch = writeBatch(db);
+
+      for (const technique of data.techniques) {
+        batch.set(
+          doc(collection(db, "userProgress", userId, "techniquesProgress")),
+          {
+            techniqueId: technique,
+            trainingId,
+            date: Timestamp.now(),
+          }
+        );
+      }
+
+      await batch.commit();
+    }
+  } else {
+    console.log("No such training document!");
+  }
+}
+
 export interface TrainingData {
   id?: string;
   date: DateTime;
@@ -114,6 +152,14 @@ export default function Trainings() {
   const handleParticipation = (checked: boolean, trainingId: string) => {
     console.log(trainingId, checked);
     if (checked) {
+      addNormalizedParticipation(userData.id, trainingId)
+        .then(() => {
+          toast.success("Participation added");
+        })
+        .catch((error) => {
+          toast.error(error.message);
+        });
+
       setUserdata({
         participations: userData.participations.add(trainingId),
       });

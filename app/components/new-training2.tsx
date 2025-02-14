@@ -4,15 +4,11 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
-import { Select } from "@mui/material";
 import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import useFirebaseData from "~/services/firebase-data-service";
 import { Technique } from "~/routes/techniques";
@@ -25,11 +21,7 @@ interface NewTrainingDialogProps {
   handleSave: (date: DateTime, techniques: string[]) => void;
 }
 function NewTrainingDialog({ date, handleSave }: NewTrainingDialogProps) {
-  const {
-    data: techniques,
-    isLoading,
-    error,
-  } = useFirebaseData<Technique>("techniques");
+  const { data: techniques } = useFirebaseData<Technique>("techniques");
 
   const [open, setOpen] = React.useState(false);
 

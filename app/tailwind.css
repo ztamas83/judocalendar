@@ -26,7 +26,6 @@ body {
   */
 
 :root {
-
   --background: hsl(0 0% 100%);
 
   --foreground: hsl(224 71.4% 4.1%);
@@ -83,7 +82,6 @@ body {
   */
 
 .dark {
-
   --background: hsl(224 71.4% 4.1%);
 
   --foreground: hsl(210 20% 98%);
@@ -138,7 +136,6 @@ body {
   */
 
 @theme inline {
-
   --color-background: var(--background);
 
   --color-foreground: var(--foreground);
@@ -206,5 +203,59 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .judobadge {
+    width: 50px;
+    height: 16px;
+    border-radius: 4px; /* Slightly rounded corners */
+    display: inline-block; /* Makes the badge behave like inline text */
+    text-align: center; /* Centers the text within the badge */
+    line-height: 16px; /* Vertically centers the text */
+    font-size: 12px; /* Adjust font size as needed */
+    color: white; /* Default text color */
+    font-family: sans-serif; /* Example font */
+  }
+
+  .white-belt {
+    background: white;
+  }
+
+  .wy-belt {
+    background: linear-gradient(to right, white, yellow);
+  }
+
+  .yellow-belt {
+    background: yellow;
+  }
+
+  .yo-belt {
+    background: linear-gradient(to right, yellow, orange);
+  }
+
+  .orange-belt {
+    background: orange;
+  }
+
+  .og-belt {
+    background: linear-gradient(to right, orange, green);
+  }
+
+  .green-belt {
+    background: green;
+  }
+
+  .gb-belt {
+    background: linear-gradient(to right, green, blue);
+  }
+
+  .blue-belt {
+    background: blue;
+  }
+
+  .brown-belt {
+    background: brown;
   }
 }
