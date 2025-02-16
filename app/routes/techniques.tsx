@@ -1,48 +1,19 @@
 import { JSX, useEffect, useState } from "react";
-import { useLoaderData } from "react-router";
 import useFirebaseData, {
-  getUniqueCategories,
   TechniqueCategories,
 } from "~/services/firebase-data-service";
-
-import {
-  Tab,
-  Tabs,
-  ListItem,
-  ListItemText,
-  Typography,
-  List,
-} from "@mui/material";
-
-export async function clientLoader(): Promise<TechniqueCategories | undefined> {
-  const data = await getUniqueCategories();
-  if (!data) {
-    return undefined;
-  }
-  return data;
-}
-
-export interface Technique {
-  id: string;
-  name: string;
-  name_jp: string;
-  category: string;
-  sub_category: string;
-  level: number;
-  description: string;
-}
-
-function groupBy(data: any[], key: string): { [key: string]: any[] } {
-  return data.reduce(function (rv, x) {
-    (rv[x[key]] = rv[x[key]] || []).push(x);
-    return rv;
-  }, {});
-}
+import { Technique } from "~/models/technique";
+import { Tab, Tabs, ListItem, ListItemText, List } from "@mui/material";
+import { useUserData } from "~/services/user-data-hook";
+import { TechniquesAdmin } from "~/components/techniques-admin";
+import { groupBy } from "~/utils";
+import { Circle } from "lucide-react";
 
 export default function Techniques() {
+  const [isLoggedIn, userData] = useUserData();
   const { data, isLoading, error } = useFirebaseData<Technique>("techniques");
 
-  const [selectedCategory, setSelectedCategory] = useState<string>();
+  const [selectedSubPage, setSelectedSubPage] = useState<string>();
   const [selectedSubCategory, setSelectedSubCategory] = useState<string>("");
   const [categoryData, setCategoryData] = useState<TechniqueCategories>();
 
@@ -89,18 +60,61 @@ export default function Techniques() {
     }
 
     const handleChange = (event: React.SyntheticEvent, newValue: string) => {
-      console.log("New sub category selected: ", selectedCategory, newValue);
+      console.log("New sub category selected: ", selectedSubPage, newValue);
       setSelectedSubCategory(newValue);
     };
 
-    return categoryData && selectedCategory ? (
+    if (!selectedSubPage) {
+      return <p>Select a category</p>;
+    }
+
+    if (selectedSubPage === "admin") {
+      return <TechniquesAdmin />;
+    }
+
+    function BeltIndicator({
+      technique,
+    }: {
+      technique: Technique;
+    }): JSX.Element {
+      let color = "white";
+
+      console.log("Handling technique", technique);
+
+      switch (+technique.kyu) {
+        case 5:
+          color = "yellow";
+          break;
+        case 4:
+          color = "orange";
+          break;
+        case 3:
+          color = "green";
+          break;
+        case 2:
+          color = "blue";
+          break;
+        case 1:
+          color = "brown";
+          break;
+        default:
+          return <Circle fill="white" size={10} />;
+      }
+
+      console.log("Selected color", color);
+
+      return <Circle fill={color} color={color} size={10} />;
+      // return <div className="bg-{color} fill-amber-200" />;
+    }
+
+    return categoryData && selectedSubPage ? (
       <div className="p-6">
         <Tabs
           value={selectedSubCategory}
           onChange={handleChange}
           aria-label="basic tabs example"
         >
-          {categoryData.subCategories[selectedCategory].map((sc) => (
+          {categoryData.subCategories[selectedSubPage].map((sc) => (
             <Tab label={sc} value={sc} />
           ))}
         </Tabs>
@@ -114,10 +128,13 @@ export default function Techniques() {
           <List>
             {techniquesByCategory![selectedSubCategory]?.map((technique) => (
               <ListItem>
-                <ListItemText
-                  primary={technique.name + " " + technique.name_jp}
-                  secondary={technique.description}
-                />
+                <div className="align-middle">
+                  <BeltIndicator technique={technique} />
+                  <ListItemText
+                    primary={technique.name + " " + technique.name_jp}
+                    secondary={technique.description}
+                  />
+                </div>
               </ListItem>
             ))}
           </List>
@@ -129,31 +146,31 @@ export default function Techniques() {
   // const [content, setContent] = useState<JSX.Element>(() => renderContent());
 
   useEffect(() => {
-    if (categoryData && selectedCategory) {
-      setSelectedSubCategory(categoryData?.subCategories[selectedCategory][0]);
+    if (categoryData && selectedSubPage && selectedSubPage !== "admin") {
+      setSelectedSubCategory(categoryData?.subCategories[selectedSubPage][0]);
     }
-  }, [selectedCategory]);
+  }, [selectedSubPage]);
 
   useEffect(() => {
     const groupedTechniques = groupBy(
-      data.filter((t) => t.category == selectedCategory),
+      data.filter((t) => t.category == selectedSubPage),
       "sub_category"
     );
     setTechniquesByCategory(groupedTechniques);
     console.log("groupedTechniques", groupedTechniques);
-  }, [data, isLoading, error, selectedCategory]);
+  }, [data, isLoading, error, selectedSubPage]);
 
   return (
-    <div className="flex h-screen">
-      <aside className="w-64 bg-gray-100 p-4">
+    <div className="grid grid-cols-[200px_auto] gap-4 h-screen">
+      <aside className="flex-1 xbg-gray-100 p-4">
         <nav>
           <ul className="space-y-2">
             {categoryData?.categories.map((category) => (
               <li key={category}>
                 <button
-                  onClick={() => setSelectedCategory(category)}
+                  onClick={() => setSelectedSubPage(category)}
                   className={`w-full text-left px-4 py-2 rounded ${
-                    selectedCategory === category
+                    selectedSubPage === category
                       ? "bg-blue-500 text-white"
                       : "hover:bg-gray-200"
                   }`}
@@ -162,11 +179,23 @@ export default function Techniques() {
                 </button>
               </li>
             ))}
+            {isLoggedIn && userData?.isAdmin ? (
+              <li>
+                <button
+                  className="w-full text-left px-4 py-2 rounded hover:bg-gray-200"
+                  onClick={() => setSelectedSubPage("admin")}
+                >
+                  Admin
+                </button>
+              </li>
+            ) : null}
           </ul>
         </nav>
       </aside>
 
-      <main className="flex-1">{renderContent()}</main>
+      <main className="flex-1 w-auto items-center justify-around pt-4 pl-8">
+        {renderContent()}
+      </main>
     </div>
   );
 }

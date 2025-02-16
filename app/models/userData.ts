@@ -13,6 +13,7 @@ export interface UserData {
   createdAt?: DateTime;
   updatedAt?: DateTime;
   lastLogin: DateTime;
+  isAdmin: boolean;
 }
 
 // Firestore data converter
@@ -48,6 +49,7 @@ export const userConverter = {
       lastLogin: data.lastLogin,
       createdAt: DateTime.fromJSDate(data.createdAt?.toDate() ?? 0),
       // Map other fields as needed
+      isAdmin: data.role === "admin",
     };
   },
 };

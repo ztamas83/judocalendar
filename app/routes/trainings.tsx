@@ -1,7 +1,7 @@
 import { DateTime, Interval } from "luxon";
 import { useEffect, useMemo, useState } from "react";
 import useFirebaseData, { Collections } from "~/services/firebase-data-service";
-import { Technique } from "./techniques";
+import { Technique } from "~/models/technique";
 import { Card, CardContent, Stack } from "@mui/material";
 import { CardTitle } from "~/components";
 import { useFirestore } from "~/services/firebase-hooks";
