@@ -15,3 +15,5 @@ node_modules
 /public
 
 *-debug.log
+
+/data
