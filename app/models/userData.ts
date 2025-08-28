@@ -28,7 +28,11 @@ export const userConverter = {
     return {
       updatedAt: Timestamp.now(),
       participations: Array.from(user.participations ?? []),
-      beltHistory: user.beltHistory || null,
+      beltHistory:
+        user.beltHistory?.map((bh) => ({
+          kyu: bh.kyu,
+          date: Timestamp.fromMillis(bh.date.toMillis()),
+        })) || null,
     } as any;
   },
 

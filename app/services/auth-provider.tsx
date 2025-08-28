@@ -14,10 +14,9 @@ import {
 } from "react";
 import { useNavigate } from "react-router";
 import { useFirestore } from "./firebase-hooks";
-import { UserData, userConverter } from "~/models/userData";
 import { Collections } from "./firebase-data-service";
-import { doc, DocumentSnapshot } from "firebase/firestore";
 import { DateTime } from "luxon";
+import { useUserData } from "~/services/user-data-hook";
 
 const initialState: AuthState = {
   isAuthenticated: false,
@@ -121,9 +120,9 @@ function AuthProvider({ children }) {
 
   useEffect(() => {
     if (state.isAuthenticated && state.user) {
-      fs.updateDocument(Collections.USERS, state.user.uid, {
-        lastLogin: DateTime.now(),
-      });
+      // fs.updateDocument(Collections.USERS, state.user.uid, {
+      //   lastLogin: DateTime.now(),
+      // });
     }
   }, [state]);
 

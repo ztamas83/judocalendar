@@ -1,3 +1,4 @@
+import { DateTime } from "luxon";
 import { useState } from "react";
 import { Card } from "~/components/ui/card";
 import { CardContent } from "~/components/ui/card";
@@ -5,10 +6,11 @@ import {
   Box,
   Button,
   FormControl,
-  Icon,
   InputLabel,
   MenuItem,
+  Modal,
   Select,
+  TextField,
 } from "@mui/material";
 import Timeline from "@mui/lab/Timeline";
 import TimelineItem from "@mui/lab/TimelineItem";
@@ -23,6 +25,32 @@ import { PlusCircle } from "lucide-react";
 export function ProfilePage() {
   const [isLoggedin, userData, setUserdata, authenticatedUser] = useUserData();
   const [editMode, setEditMode] = useState(false);
+
+  // Modal state
+  const [openModal, setOpenModal] = useState(false);
+  const [newKyu, setNewKyu] = useState("");
+  const [newDate, setNewDate] = useState(DateTime.now().toISODate());
+
+  // Handle modal form submit
+
+  const handleAddBelt = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Adding new belt", newKyu, newDate);
+    if (!newKyu || !newDate) return;
+    const newEntry = {
+      kyu: +newKyu,
+      date: DateTime.fromISO(newDate),
+    };
+    userData.beltHistory?.push(newEntry);
+    console.log("new history", userData.beltHistory);
+    setUserdata({
+      ...userData,
+    });
+    setOpenModal(false);
+    setNewKyu("");
+    setNewDate(DateTime.now().toISODate());
+  };
+
   return (
     <div className="grid grid-cols-1 gap-4 p-4">
       <Card>
@@ -89,12 +117,64 @@ export function ProfilePage() {
             ))}
           </Timeline>
           <div className="flex col-start-1">
-            <Button color="inherit" variant="text" size="small">
+            <Button
+              color="inherit"
+              variant="text"
+              size="small"
+              disabled={!editMode}
+              onClick={() => setOpenModal(true)}
+            >
               <PlusCircle />
             </Button>
           </div>
         </div>
       </div>
+      {/* Modal for adding new Kyu level */}
+      <Modal open={openModal} onClose={() => setOpenModal(false)}>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            bgcolor: "background.paper",
+            boxShadow: 24,
+            p: 4,
+            borderRadius: 2,
+            minWidth: 300,
+          }}
+        >
+          <form onSubmit={handleAddBelt} className="flex flex-col gap-4">
+            <FormControl fullWidth>
+              <InputLabel id="kyu-select-label">Kyu Level</InputLabel>
+              <Select
+                labelId="kyu-select-label"
+                value={newKyu}
+                label="Kyu Level"
+                onChange={(e) => setNewKyu(e.target.value)}
+                required
+              >
+                {[6, 5, 4, 3, 2, 1].map((level) => (
+                  <MenuItem key={level} value={level}>
+                    {level} kyu
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <TextField
+              label="Date"
+              type="date"
+              value={newDate}
+              onChange={(e) => setNewDate(e.target.value)}
+              InputLabelProps={{ shrink: true }}
+              required
+            />
+            <Button type="submit" variant="contained" color="primary">
+              Add Belt
+            </Button>
+          </form>
+        </Box>
+      </Modal>
     </div>
   );
 }

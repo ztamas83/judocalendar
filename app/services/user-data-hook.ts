@@ -48,11 +48,9 @@ export function useUserData(): [
     }
     console.log("setUserData", value);
 
-    fb.updateDocument(
-      Collections.USERS,
-      authenticatedUser.user!.uid,
-      userConverter.toFirestore(value)
-    );
+    fb.updateDocument(Collections.USERS, authenticatedUser.user!.uid, {
+      ...value,
+    });
   }
 
   return [isLoggedIn, localData, setUserData, authenticatedUser.user];
