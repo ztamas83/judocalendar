@@ -20,13 +20,17 @@ export const useFirestore = () => {
   ) => {
     switch (collection) {
       case Collections.USERS:
-        setDoc(
-          doc(db, collection, docId),
-          userConverter.toFirestore(data as UserData),
-          {
-            merge: true,
-          }
-        );
+        try {
+          setDoc(
+            doc(db, collection, docId),
+            userConverter.toFirestore(data as UserData),
+            {
+              merge: true,
+            }
+          );
+        } catch (err) {
+          console.error(err);
+        }
     }
   };
 

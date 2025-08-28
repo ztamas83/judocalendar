@@ -8,7 +8,8 @@ import { useAuth } from "./auth-provider";
 export function useUserData(): [
   isLoggedIn: boolean,
   userData: UserData,
-  setUserData: Dispatch<Partial<UserData>>
+  setUserData: Dispatch<Partial<UserData>>,
+  authenticatedUser: any
 ] {
   const authenticatedUser = useAuth();
 
@@ -45,9 +46,14 @@ export function useUserData(): [
       console.warn("No value provided");
       return;
     }
-    console.log(value);
-    fb.updateDocument(Collections.USERS, authenticatedUser.user!.uid, value);
+    console.log("setUserData", value);
+
+    fb.updateDocument(
+      Collections.USERS,
+      authenticatedUser.user!.uid,
+      userConverter.toFirestore(value)
+    );
   }
 
-  return [isLoggedIn, localData, setUserData];
+  return [isLoggedIn, localData, setUserData, authenticatedUser.user];
 }

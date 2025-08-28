@@ -9,7 +9,12 @@ export interface UserData {
   id: string;
   participations: Set<string>;
   role?: string;
-  currentBelt: number;
+  beltHistory?: [
+    {
+      kyu: number;
+      date: DateTime;
+    }
+  ];
   createdAt?: DateTime;
   updatedAt?: DateTime;
   lastLogin: DateTime;
@@ -18,20 +23,15 @@ export interface UserData {
 
 // Firestore data converter
 export const userConverter = {
-  toFirestore: (user: UserData): any => {
-    const firestoreData = {
+  toFirestore: (user: Partial<UserData>): any => {
+    console.log("storing user", user);
+    return {
       updatedAt: Timestamp.now(),
+      participations: Array.from(user.participations ?? []),
+      beltHistory: user.beltHistory || null,
     } as any;
-
-    if (user.participations) {
-      firestoreData.participations = Array.from(user.participations);
-    }
-
-    if (user.currentBelt > 0) {
-      firestoreData.currentBelt = user.currentBelt;
-    }
-    return firestoreData;
   },
+
   fromFirestore: (
     snapshot: DocumentSnapshot,
     options?: SnapshotOptions
@@ -41,15 +41,27 @@ export const userConverter = {
     if (!data) {
       throw new Error("Invalid data");
     }
-    return {
+    const userDao = {
       id: snapshot.id,
       role: data.role ?? "unknown",
-      currentBelt: data.currentBelt ?? -1,
+      beltHistory:
+        data.beltHistory?.map((bh: any) => ({
+          kyu: bh.kyu,
+          date: DateTime.fromJSDate(bh.date.toDate()),
+        })) ?? [],
       participations: new Set(data.participations ?? []),
       lastLogin: data.lastLogin,
       createdAt: DateTime.fromJSDate(data.createdAt?.toDate() ?? 0),
       // Map other fields as needed
       isAdmin: data.role === "admin",
     };
+
+    if (userDao.beltHistory.length === 0) {
+      userDao.beltHistory.push({ kyu: 6, date: userDao.createdAt });
+    }
+
+    console.log("created userDao:", userDao);
+
+    return userDao;
   },
 };
