@@ -5,6 +5,7 @@ import {
   Box,
   Button,
   FormControl,
+  Icon,
   InputLabel,
   MenuItem,
   Select,
@@ -15,6 +16,9 @@ import TimelineSeparator from "@mui/lab/TimelineSeparator";
 import TimelineContent from "@mui/lab/TimelineContent";
 import TimelineDot from "@mui/lab/TimelineDot";
 import { useUserData } from "~/services/user-data-hook";
+import { KyuLevel } from "~/models/technique";
+import SportsMartialArtsIcon from "@mui/icons-material/SportsMartialArts";
+import { PlusCircle } from "lucide-react";
 
 export function ProfilePage() {
   const [isLoggedin, userData, setUserdata, authenticatedUser] = useUserData();
@@ -59,25 +63,38 @@ export function ProfilePage() {
         </CardContent>
       </Card>
       {/* here goes the belt history and other profile details */}
-
-      <Timeline>
-        {userData.beltHistory?.map((entry, idx) => (
-          <TimelineItem key={idx}>
-            <TimelineSeparator>
-              <TimelineDot color="secondary" />
-              {/* {idx < userData.beltHistory.length - 1 && <TimelineConnector />} */}
-            </TimelineSeparator>
-            <TimelineContent>
-              <div className="flex flex-col">
-                <span className="font-semibold">{entry.kyu}</span>
-                <span className="text-sm text-gray-500">
-                  {entry.date.toISODate()}
-                </span>
-              </div>
-            </TimelineContent>
-          </TimelineItem>
-        ))}
-      </Timeline>
+      <div className="grid grid-cols-4">
+        <div id="col1 flex flex-rows col-start-1 col-end-2 items-center">
+          <Timeline>
+            {userData.beltHistory?.map((entry, idx) => (
+              <TimelineItem key={idx}>
+                <TimelineSeparator>
+                  <TimelineDot
+                    sx={{
+                      backgroundColor: KyuLevel[entry.kyu],
+                    }}
+                  >
+                    <SportsMartialArtsIcon className="text-gray-500" />
+                  </TimelineDot>
+                </TimelineSeparator>
+                <TimelineContent>
+                  <div className="flex flex-col">
+                    <span className="font-semibold">{entry.kyu} kyu</span>
+                    <span className="text-sm text-gray-500">
+                      {entry.date.toISODate()}
+                    </span>
+                  </div>
+                </TimelineContent>
+              </TimelineItem>
+            ))}
+          </Timeline>
+          <div className="flex col-start-1">
+            <Button color="inherit" variant="text" size="small">
+              <PlusCircle />
+            </Button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
