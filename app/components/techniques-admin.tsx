@@ -26,6 +26,7 @@ import { groupBy } from "~/utils";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import useFirebaseData from "~/services/firebase-data-service";
+import { NewTechniqueDialog } from "./new-technique-dialog";
 
 declare module "@tanstack/react-table" {
   //allows us to define custom properties for our columns
@@ -172,74 +173,79 @@ export function TechniquesAdmin() {
     return <div>Loading...</div>;
   }
   return (
-    <div className="flex flex-row items-center w-[85%]">
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead
-                      key={header.id}
-                      style={{ width: header.getSize() }}
-                    >
-                      <div>
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                      </div>
-                      {header.column.getCanFilter() ? (
+    <div className="grid grid-rows-[auto_auto] grid-cols-1 gap-4">
+      <div>
+        <NewTechniqueDialog />
+      </div>
+      <div className="flex flex-row items-center w-[85%]">
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead
+                        key={header.id}
+                        style={{ width: header.getSize() }}
+                      >
                         <div>
-                          <Filter
-                            column={header.column}
-                            filterOptions={
-                              header.column.columnDef.meta?.filterVariant ===
-                              "categories"
-                                ? Object.keys(groupBy(data, "category"))
-                                : undefined
-                            }
-                          />
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
                         </div>
-                      ) : null}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
+                        {header.column.getCanFilter() ? (
+                          <div>
+                            <Filter
+                              column={header.column}
+                              filterOptions={
+                                header.column.columnDef.meta?.filterVariant ===
+                                "categories"
+                                  ? Object.keys(groupBy(data, "category"))
+                                  : undefined
+                              }
+                            />
+                          </div>
+                        ) : null}
+                      </TableHead>
+                    );
+                  })}
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={TechniqueHeaders.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={TechniqueHeaders.length}
+                    className="h-24 text-center"
+                  >
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </div>
     </div>
   );

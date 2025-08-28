@@ -2,13 +2,47 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Edit, Save } from "lucide-react";
 
+enum TechniqueCategory {
+  "Nage-Waza" = "nw",
+  "Katame-Waza" = "kw",
+  "Ukemi-Waza" = "uw",
+}
+
+enum TechniqueSubCategory {
+  // Nage-Waza
+  "Te-Waza" = "tew",
+  "Koshi-Waza" = "kow",
+  "Ashi-Waza" = "asw",
+  "Ma-Sutemi-Waza" = "msw",
+  "Yoko-Sutemi-Waza" = "ysw",
+  // Katame-Waza
+  "Osaekomi-Waza" = "osw",
+  "Kansetsu-Waza" = "kaw",
+  "Shime-Waza" = "shw",
+}
+
+const SubCategoriesMap = {
+  [TechniqueCategory["Nage-Waza"]]: [
+    TechniqueSubCategory["Te-Waza"],
+    TechniqueSubCategory["Koshi-Waza"],
+    TechniqueSubCategory["Ashi-Waza"],
+    TechniqueSubCategory["Ma-Sutemi-Waza"],
+    TechniqueSubCategory["Yoko-Sutemi-Waza"],
+  ],
+  [TechniqueCategory["Katame-Waza"]]: [
+    TechniqueSubCategory["Osaekomi-Waza"],
+    TechniqueSubCategory["Kansetsu-Waza"],
+    TechniqueSubCategory["Shime-Waza"],
+  ],
+  [TechniqueCategory["Ukemi-Waza"]]: [],
+};
+
 interface Technique {
   id: string;
   name: string;
-  name_jp: string;
-  category: string;
-  sub_category: string;
-  level: number;
+  name_jp?: string;
+  category: TechniqueCategory;
+  sub_category?: TechniqueSubCategory;
   kyu: number;
   tkp: number;
   description: string;
@@ -88,4 +122,21 @@ const TechniqueHeaders: ColumnDef<Technique>[] = [
   },
 ];
 
-export { TechniqueHeaders, type Technique };
+enum KyuLevel {
+  "black",
+  "brown",
+  "blue",
+  "green",
+  "orange",
+  "yellow",
+  "white",
+}
+
+export {
+  TechniqueHeaders,
+  type Technique,
+  TechniqueCategory,
+  TechniqueSubCategory,
+  SubCategoriesMap,
+  KyuLevel,
+};

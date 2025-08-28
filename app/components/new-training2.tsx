@@ -11,7 +11,7 @@ import {
 import { Button } from "~/components/ui/button";
 import { Label } from "~/components/ui/label";
 import useFirebaseData from "~/services/firebase-data-service";
-import { Technique } from "~/routes/techniques";
+import { Technique } from "~/models/technique";
 import MultipleSelector, { Option } from "./ui/multipleSelector";
 import { useEffect } from "react";
 import { toast } from "sonner";

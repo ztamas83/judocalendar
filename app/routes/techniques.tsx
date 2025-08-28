@@ -8,6 +8,7 @@ import { useUserData } from "~/services/user-data-hook";
 import { TechniquesAdmin } from "~/components/techniques-admin";
 import { groupBy } from "~/utils";
 import { Circle } from "lucide-react";
+import { JudoBelt } from "~/components/ui/judo-belt";
 
 export default function Techniques() {
   const [isLoggedIn, userData] = useUserData();
@@ -25,10 +26,15 @@ export default function Techniques() {
       data.forEach((doc) => {
         const category = doc.category;
         categories.add(category);
+
+        // this is to always have a sub-category for each category, even if empty
         if (!subCategories[category]) {
           subCategories[category] = new Set<string>();
         }
-        subCategories[category].add(doc.sub_category);
+
+        if (doc.sub_category) {
+          subCategories[category].add(doc.sub_category);
+        }
       });
 
       console.log("Categories:", categories);
@@ -72,66 +78,48 @@ export default function Techniques() {
       return <TechniquesAdmin />;
     }
 
-    function BeltIndicator({
-      technique,
-    }: {
-      technique: Technique;
-    }): JSX.Element {
-      let color = "white";
-
-      console.log("Handling technique", technique);
-
-      switch (+technique.kyu) {
-        case 5:
-          color = "yellow";
-          break;
-        case 4:
-          color = "orange";
-          break;
-        case 3:
-          color = "green";
-          break;
-        case 2:
-          color = "blue";
-          break;
-        case 1:
-          color = "brown";
-          break;
-        default:
-          return <Circle fill="white" size={10} />;
-      }
-
-      console.log("Selected color", color);
-
-      return <Circle fill={color} color={color} size={10} />;
-      // return <div className="bg-{color} fill-amber-200" />;
+    function renderTabbedView() {
+      return (
+        <div className="p-6">
+          <Tabs value={selectedSubCategory} onChange={handleChange}>
+            {categoryData?.subCategories[selectedSubPage!].map((sc) => (
+              <Tab label={sc} value={sc} />
+            ))}
+          </Tabs>
+          <div
+            role="tabpanel"
+            // hidden={value !== index}
+            id={selectedSubCategory}
+            className="p-4"
+          >
+            <List>
+              {techniquesByCategory![selectedSubCategory]?.map((technique) => (
+                <ListItem key={technique.id}>
+                  <div className="align-middle">
+                    <JudoBelt technique={technique} />
+                    <ListItemText
+                      primary={technique.name + " " + technique.name_jp}
+                      secondary={technique.description}
+                    />
+                  </div>
+                </ListItem>
+              ))}
+            </List>
+          </div>
+        </div>
+      );
     }
 
-    return categoryData && selectedSubPage ? (
-      <div className="p-6">
-        <Tabs
-          value={selectedSubCategory}
-          onChange={handleChange}
-          aria-label="basic tabs example"
-        >
-          {categoryData.subCategories[selectedSubPage].map((sc) => (
-            <Tab label={sc} value={sc} />
-          ))}
-        </Tabs>
-
-        <div
-          role="tabpanel"
-          // hidden={value !== index}
-          id={selectedSubCategory}
-          className="p-4"
-        >
+    function renderNonTabbedView() {
+      return (
+        <div className="p-6">
           <List>
             {techniquesByCategory![selectedSubCategory]?.map((technique) => (
-              <ListItem>
+              <ListItem key={technique.id}>
                 <div className="align-middle">
-                  <BeltIndicator technique={technique} />
+                  <JudoBelt technique={technique} />
                   <ListItemText
-                    primary={technique.name + " " + technique.name_jp}
+                    primary={`${technique.name} ${technique.name_jp ?? ""}`}
                     secondary={technique.description}
                   />
                 </div>
@@ -139,8 +127,16 @@ export default function Techniques() {
             ))}
           </List>
         </div>
-      </div>
-    ) : null;
+      );
+    }
+
+    if (categoryData && selectedSubPage) {
+      if (categoryData.subCategories[selectedSubPage!].length > 0) {
+        return renderTabbedView();
+      }
+
+      return renderNonTabbedView();
+    }
   };
 
   // const [content, setContent] = useState<JSX.Element>(() => renderContent());

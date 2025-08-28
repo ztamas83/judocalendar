@@ -219,43 +219,7 @@ body {
     font-family: sans-serif; /* Example font */
   }
 
-  .white-belt {
-    background: white;
-  }
-
-  .wy-belt {
-    background: linear-gradient(to right, white, yellow);
-  }
-
-  .yellow-belt {
-    background: yellow;
-  }
-
-  .yo-belt {
-    background: linear-gradient(to right, yellow, orange);
-  }
-
-  .orange-belt {
-    background: orange;
-  }
-
-  .og-belt {
-    background: linear-gradient(to right, orange, green);
-  }
-
-  .green-belt {
-    background: green;
-  }
-
-  .gb-belt {
-    background: linear-gradient(to right, green, blue);
-  }
-
-  .blue-belt {
-    background: blue;
-  }
-
-  .brown-belt {
-    background: brown;
+  .clickable {
+    @apply rounded-sm bg-gray-400 hover:bg-black hover:text-white text-sm px-2 py-1;
   }
 }
