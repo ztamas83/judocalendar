@@ -5,12 +5,12 @@ import { DocumentSnapshot } from "firebase/firestore";
 import { useFirestore } from "./firebase-hooks";
 import { useAuth } from "./auth-provider";
 
-export function useUserData(): [
-  isLoggedIn: boolean,
-  userData: UserData,
-  setUserData: Dispatch<Partial<UserData>>,
-  authenticatedUser: any
-] {
+export function useUserData(): {
+  isLoggedIn: boolean;
+  userData: UserData | undefined;
+  setUserdata: Dispatch<Partial<UserData>>;
+  authenticatedUser: any;
+} {
   const authenticatedUser = useAuth();
 
   const isLoggedIn = useMemo(
@@ -18,7 +18,7 @@ export function useUserData(): [
     [authenticatedUser]
   );
 
-  const [localData, setLocalData] = useState<UserData>({});
+  const [localData, setLocalData] = useState<UserData>();
   const fb = useFirestore();
 
   // subscribe to user profile changes
@@ -38,7 +38,7 @@ export function useUserData(): [
     }
   }, [authenticatedUser]);
 
-  function setUserData(value: Partial<UserData>) {
+  function setUserdata(value: Partial<UserData>) {
     if (!isLoggedIn) {
       throw new Error("User is not logged in");
     }
@@ -53,5 +53,10 @@ export function useUserData(): [
     });
   }
 
-  return [isLoggedIn, localData, setUserData, authenticatedUser.user];
+  return {
+    isLoggedIn,
+    userData: localData,
+    setUserdata,
+    authenticatedUser: authenticatedUser.user,
+  };
 }

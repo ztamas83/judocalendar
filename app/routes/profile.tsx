@@ -28,11 +28,11 @@ const subPages = [
 ];
 
 export default function Profile() {
-  const [isLoggedin, userData] = useUserData();
+  const { isLoggedIn, userData } = useUserData();
 
   const [selectedSubPage, setSelectedSubPage] = useState("profile");
 
-  if (!userData || !isLoggedin) {
+  if (!userData || !isLoggedIn) {
     return <div>User data not available</div>;
   }
 

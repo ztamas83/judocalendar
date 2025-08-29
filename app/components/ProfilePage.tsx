@@ -23,7 +23,8 @@ import SportsMartialArtsIcon from "@mui/icons-material/SportsMartialArts";
 import { PlusCircle } from "lucide-react";
 
 export function ProfilePage() {
-  const [isLoggedin, userData, setUserdata, authenticatedUser] = useUserData();
+  const { isLoggedIn, userData, setUserData, authenticatedUser } =
+    useUserData();
   const [editMode, setEditMode] = useState(false);
 
   // Modal state
@@ -43,7 +44,7 @@ export function ProfilePage() {
     };
     userData.beltHistory?.push(newEntry);
     console.log("new history", userData.beltHistory);
-    setUserdata({
+    setUserData({
       ...userData,
     });
     setOpenModal(false);
@@ -94,7 +95,7 @@ export function ProfilePage() {
       <div className="grid grid-cols-4">
         <div id="col1 flex flex-rows col-start-1 col-end-2 items-center">
           <Timeline>
-            {userData.beltHistory?.map((entry, idx) => (
+            {userData?.beltHistory?.map((entry, idx) => (
               <TimelineItem key={idx}>
                 <TimelineSeparator>
                   <TimelineDot
