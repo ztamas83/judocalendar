@@ -33,6 +33,7 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname, "./app"),
       "@/utils": path.resolve(__dirname, "./app/components/utils"),
+      "~images": path.resolve(__dirname, "./app/assets/img"),
     },
   },
 });

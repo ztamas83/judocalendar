@@ -78,8 +78,8 @@ export default function Trainings() {
   const [error, setError] = useState<Error>();
 
   const fb = useFirestore();
-  const [isLoggedIn, userData, setUserdata] = useUserData();
-  const isAdminUser = useMemo(() => userData.role == "admin", [userData]);
+  const { isLoggedIn, userData, setUserdata } = useUserData();
+  const isAdminUser = useMemo(() => userData?.role == "admin", [userData]);
 
   const [trainings, setTrainings] = useState<TrainingData[]>([]);
 
