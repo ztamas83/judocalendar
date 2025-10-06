@@ -81,8 +81,8 @@ importers:
         specifier: ^0.544.0
         version: 0.544.0(react@19.1.1)
       luxon:
-        specifier: ^3.5.0
-        version: 3.7.1
+        specifier: ^3.7.2
+        version: 3.7.2
       next-themes:
         specifier: ^0.4.4
         version: 0.4.6(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
@@ -3297,8 +3297,8 @@ packages:
     peerDependencies:
       react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
-  luxon@3.7.1:
-    resolution: {integrity: sha512-RkRWjA926cTvz5rAb1BqyWkKbbjzCGchDUIKMCUvNi17j6f6j8uHGDV82Aqcqtzd+icoYpELmG3ksgGiFNNcNg==}
+  luxon@3.7.2:
+    resolution: {integrity: sha512-vtEhXh/gNjI9Yg1u4jX/0YVPMvxzHuGgCm6tC5kZyb08yjGWGnqAjGJvcXbqQR2P3MyMEFnRbpcdFS6PBcLqew==}
     engines: {node: '>=12'}
 
   magic-string@0.30.18:
@@ -7930,7 +7930,7 @@ snapshots:
     dependencies:
       react: 19.1.1
 
-  luxon@3.7.1: {}
+  luxon@3.7.2: {}
 
   magic-string@0.30.18:
     dependencies:
