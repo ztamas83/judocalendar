@@ -16,14 +16,9 @@
     "firestore": {
       "port": 9080
     },
-    "database": {
-      "port": 9000
-    },
-    "hosting": {
-      "port": 5000
-    },
     "ui": {
-      "enabled": true
+      "enabled": true,
+      "port": 4000
     },
     "singleProjectMode": true
   }

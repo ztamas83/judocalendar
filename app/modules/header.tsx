@@ -1,6 +1,5 @@
-import { u } from "node_modules/react-router/dist/development/index-react-server-client-DRhjXpk2.mjs";
-import { useContext, useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { useMemo, useState } from "react";
+import { useNavigate } from "react-router";
 import { useAuth } from "~/services/auth-provider";
 import { useUserData } from "~/services/user-data-hook";
 import AppBar from "@mui/material/AppBar";
@@ -25,7 +24,10 @@ export default function Header() {
   const isAdminUser = useMemo(() => userData?.role == "admin", [userData]);
   const navigate = useNavigate();
 
-  const pages = ["Trainings", "Techniques"];
+  const pages = [
+    { label: "Trainings", path: "/trainings" },
+    { label: "Techniques", path: "/techniques" },
+  ];
   const userSettings = ["Profile", "Logout"];
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
@@ -41,13 +43,18 @@ export default function Header() {
     setAnchorElNav(null);
   };
 
+  const handlePageNavigation = (path: string) => {
+    setAnchorElNav(null);
+    navigate(path);
+  };
+
   const handleCloseUserMenu = (target: string) => {
     setAnchorElUser(null);
     navigate(`/${target.toLowerCase()}`);
   };
 
   return (
-    <AppBar position="static">
+    <AppBar position="static" color="secondary">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <img alt="Logo" src={siteLogo} className="h-10 mr-2" />
@@ -97,8 +104,13 @@ export default function Header() {
               sx={{ display: { xs: "block", md: "none" } }}
             >
               {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography sx={{ textAlign: "center" }}>{page}</Typography>
+                <MenuItem
+                  key={page.path}
+                  onClick={() => handlePageNavigation(page.path)}
+                >
+                  <Typography sx={{ textAlign: "center" }}>
+                    {page.label}
+                  </Typography>
                 </MenuItem>
               ))}
             </Menu>
@@ -124,11 +136,11 @@ export default function Header() {
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {pages.map((page) => (
               <Button
-                key={page}
-                onClick={handleCloseNavMenu}
+                key={page.path}
+                onClick={() => handlePageNavigation(page.path)}
                 sx={{ my: 2, color: "white", display: "block" }}
               >
-                {page}
+                {page.label}
               </Button>
             ))}
           </Box>
@@ -136,7 +148,10 @@ export default function Header() {
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt={user?.displayName} src={user?.photoURL || ""} />
+                  <Avatar
+                    alt={user?.displayName ?? ""}
+                    src={user?.photoURL ?? ""}
+                  />
                 </IconButton>
               </Tooltip>
               <Menu

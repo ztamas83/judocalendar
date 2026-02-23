@@ -1,12 +1,9 @@
-import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
 import type { LinksFunction } from "react-router";
-import { AuthProvider } from "~/services/auth-provider";
+import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
 import Header from "~/modules/header";
-import "./tailwind.css";
+import { AuthProvider } from "~/services/auth-provider";
 import { Toaster } from "./components/ui/sonner";
-
-// import { config } from "dotenv";
-// config();
+import "./tailwind.css";
 
 export const links: LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
