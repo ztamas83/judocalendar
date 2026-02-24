@@ -1,14 +1,13 @@
-import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
 import type { LinksFunction } from "react-router";
-import { AuthProvider } from "~/services/auth-provider";
+import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
 import Header from "~/modules/header";
-import "./tailwind.css";
+import { AuthProvider } from "~/services/auth-provider";
 import { Toaster } from "./components/ui/sonner";
-
-// import { config } from "dotenv";
-// config();
+import siteLogo from "~images/site_logo.png";
+import "./tailwind.css";
 
 export const links: LinksFunction = () => [
+  { rel: "icon", type: "image/png", href: siteLogo },
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
     rel: "preconnect",

@@ -11,46 +11,49 @@
   --color-light-blue: #add8e6;
 }
 
-/* Base Styles */
-body {
-  background-color: var(--color-white);
-  color: var(--color-black);
-}
+@layer base {
+  /* Base styles can be defined here if needed */
+  /* Base Styles */
+  body {
+    background-color: var(--color-white);
+    color: var(--color-black);
+  }
 
-/* Typography */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  color: var(--color-dark-blue);
-  font-family: "Arial", sans-serif; /* Recommended to use a clear, strong font */
-}
+  /* Typography */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: var(--color-dark-blue);
+    font-family: "Arial", sans-serif; /* Recommended to use a clear, strong font */
+  }
 
-/* Buttons and Links */
-.btn-primary {
-  background-color: var(--color-blue);
-  color: var(--color-white);
-  font-weight: bold;
-  padding: 10px 20px;
-  border-radius: 5px;
-  text-decoration: none;
-  transition: background-color 0.3s ease;
-}
+  /* Buttons and Links */
+  .btn-primary {
+    background-color: var(--color-blue);
+    color: var(--color-white);
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+  }
 
-.btn-primary:hover {
-  background-color: var(--color-dark-blue);
-}
+  .btn-primary:hover {
+    background-color: var(--color-dark-blue);
+  }
 
-a {
-  color: var(--color-blue);
-  text-decoration: none;
-  transition: color 0.3s ease;
-}
+  a {
+    color: var(--color-blue);
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
 
-a:hover {
-  color: var(--color-dark-blue);
+  a:hover {
+    color: var(--color-dark-blue);
+  }
 }
 
 /* Additional utility classes for Tailwind */

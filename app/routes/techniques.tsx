@@ -1,4 +1,4 @@
-import { JSX, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import useFirebaseData, {
   TechniqueCategories,
 } from "~/services/firebase-data-service";
@@ -7,11 +7,10 @@ import { Tab, Tabs, ListItem, ListItemText, List } from "@mui/material";
 import { useUserData } from "~/services/user-data-hook";
 import { TechniquesAdmin } from "~/components/techniques-admin";
 import { groupBy } from "~/utils";
-import { Circle } from "lucide-react";
 import { JudoBelt } from "~/components/ui/judo-belt";
 
 export default function Techniques() {
-  const [isLoggedIn, userData] = useUserData();
+  const { isLoggedIn, userData } = useUserData();
   const { data, isLoading, error } = useFirebaseData<Technique>("techniques");
 
   const [selectedSubPage, setSelectedSubPage] = useState<string>();
@@ -42,10 +41,13 @@ export default function Techniques() {
 
       setCategoryData({
         categories: Array.from(categories),
-        subCategories: Object.keys(subCategories).reduce((dict, key) => {
-          dict[key] = Array.from(subCategories[key]);
-          return dict;
-        }, {} as { [key: string]: string[] }),
+        subCategories: Object.keys(subCategories).reduce(
+          (dict, key) => {
+            dict[key] = Array.from(subCategories[key]);
+            return dict;
+          },
+          {} as { [key: string]: string[] },
+        ),
       });
     }
   }, [data, isLoading]);
@@ -150,7 +152,7 @@ export default function Techniques() {
   useEffect(() => {
     const groupedTechniques = groupBy(
       data.filter((t) => t.category == selectedSubPage),
-      "sub_category"
+      "sub_category",
     );
     setTechniquesByCategory(groupedTechniques);
     console.log("groupedTechniques", groupedTechniques);

@@ -7,12 +7,16 @@
 import { HydratedRouter } from "react-router/dom";
 import { startTransition, StrictMode } from "react";
 import { hydrateRoot } from "react-dom/client";
+import { GlobalStyles, StyledEngineProvider } from "@mui/material";
 
 startTransition(() => {
   hydrateRoot(
     document,
     <StrictMode>
-      <HydratedRouter />
-    </StrictMode>
+      <StyledEngineProvider enableCssLayer>
+        <GlobalStyles styles="@layer theme, base, mui, components, utilities;" />
+        <HydratedRouter />
+      </StyledEngineProvider>
+    </StrictMode>,
   );
 });
