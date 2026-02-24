@@ -3,9 +3,11 @@ import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
 import Header from "~/modules/header";
 import { AuthProvider } from "~/services/auth-provider";
 import { Toaster } from "./components/ui/sonner";
+import siteLogo from "~images/site_logo.png";
 import "./tailwind.css";
 
 export const links: LinksFunction = () => [
+  { rel: "icon", type: "image/png", href: siteLogo },
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
     rel: "preconnect",

@@ -4,19 +4,17 @@ import { useAuth } from "~/services/auth-provider";
 import { useUserData } from "~/services/user-data-hook";
 import AppBar from "@mui/material/AppBar";
 import Container from "@mui/material/Container";
-import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
 import {
   Avatar,
   Box,
-  Button,
   IconButton,
   Menu,
   MenuItem,
+  Toolbar,
   Tooltip,
 } from "@mui/material";
-import { MenuIcon } from "lucide-react";
-import siteLogo from "~images/site_logo.png";
 
 export default function Header() {
   const { logout, user } = useAuth();
@@ -54,41 +52,14 @@ export default function Header() {
   };
 
   return (
-    <AppBar position="static" color="secondary">
+    <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <img alt="Logo" src={siteLogo} className="h-10 mr-2" />
-          {/* <Typography
-            variant="h6"
-            noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
-            sx={{
-              mr: 2,
-              display: { xs: "none", md: "flex" },
-              fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "inherit",
-              textDecoration: "none",
-            }}
-          >
-            LOGO
-          </Typography> */}
-
-          <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
-            <IconButton
-              size="large"
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleOpenNavMenu}
-              color="inherit"
-            >
-              <MenuIcon />
-            </IconButton>
+          <Box className="grow flex items-center gap-2 md:hidden">
+            {/* this is hidden on a desktop, but visible on mobile to open the menu */}
             <Menu
               id="menu-appbar"
+              className="block"
               anchorEl={anchorElNav}
               anchorOrigin={{
                 vertical: "bottom",
@@ -101,53 +72,36 @@ export default function Header() {
               }}
               open={Boolean(anchorElNav)}
               onClose={handleCloseNavMenu}
-              sx={{ display: { xs: "block", md: "none" } }}
             >
               {pages.map((page) => (
                 <MenuItem
-                  key={page.path}
+                  key={page.label}
+                  className="header-button"
                   onClick={() => handlePageNavigation(page.path)}
                 >
-                  <Typography sx={{ textAlign: "center" }}>
-                    {page.label}
-                  </Typography>
+                  <Typography className="text-center">{page.label}</Typography>
                 </MenuItem>
               ))}
             </Menu>
           </Box>
-          <Typography
-            variant="h5"
-            noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
-            sx={{
-              mr: 2,
-              display: { xs: "flex", md: "none" },
-              flexGrow: 1,
-              fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "inherit",
-              textDecoration: "none",
-            }}
-          >
-            LOGO
-          </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
+          <Box className="grow flex items-center gap-2 xs:hidden">
+            {/* this is hidden on a mobile, but visible on desktop to open the menu */}
             {pages.map((page) => (
               <Button
-                key={page.path}
+                key={page.label}
+                color="inherit"
                 onClick={() => handlePageNavigation(page.path)}
-                sx={{ my: 2, color: "white", display: "block" }}
+                className="header-button"
               >
                 {page.label}
               </Button>
             ))}
           </Box>
+
           {isLoggedIn && (
-            <Box sx={{ flexGrow: 0 }}>
+            <Box className="flex items-center gap-2">
               <Tooltip title="Open settings">
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                <IconButton onClick={handleOpenUserMenu} className="p-0">
                   <Avatar
                     alt={user?.displayName ?? ""}
                     src={user?.photoURL ?? ""}
@@ -155,17 +109,22 @@ export default function Header() {
                 </IconButton>
               </Tooltip>
               <Menu
-                sx={{ mt: "45px" }}
+                className="margin-top-45px"
                 id="menu-appbar"
                 anchorEl={anchorElUser}
+                slotProps={{
+                  paper: {
+                    className: "bg-primary text-primary-foreground mt-1",
+                  },
+                }}
                 anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
+                  vertical: "bottom",
+                  horizontal: "left",
                 }}
                 keepMounted
                 transformOrigin={{
                   vertical: "top",
-                  horizontal: "right",
+                  horizontal: "left",
                 }}
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}
@@ -173,11 +132,10 @@ export default function Header() {
                 {userSettings.map((setting) => (
                   <MenuItem
                     key={setting}
+                    className="header-button"
                     onClick={() => handleCloseUserMenu(setting)}
                   >
-                    <Typography sx={{ textAlign: "center" }}>
-                      {setting}
-                    </Typography>
+                    <Typography className="text-center">{setting}</Typography>
                   </MenuItem>
                 ))}
               </Menu>
@@ -187,72 +145,4 @@ export default function Header() {
       </Container>
     </AppBar>
   );
-  // return (
-  //   <header className="bg-gray-800 text-white p-4">
-  //     <nav className="container mx-auto flex items-center justify-between">
-  //       <div className="flex items-center space-x-6">
-  //         <Link to="/" className="text-xl font-bold">
-  //           JudoCalendar
-  //         </Link>
-  //         {user ? (
-  //           <Link
-  //             to="/profile"
-  //             className="hover:text-gray-500 transition-colors"
-  //           >
-  //             My Profile
-  //           </Link>
-  //         ) : null}
-  //         <Link
-  //           to="/trainings"
-  //           className="hover:text-gray-500 transition-colors"
-  //         >
-  //           Trainings
-  //         </Link>
-  //         <Link
-  //           to="/techniques"
-  //           className="hover:text-gray-500 transition-colors disabled:opacity-50 "
-  //         >
-  //           Techniques
-  //         </Link>
-
-  //         <Link
-  //           to="/admin"
-  //           className="hover:text-gray-500 transition-colors disabled:opacity-50 "
-  //         >
-  //           Techniques
-  //         </Link>
-  //         {isAdminUser ? (
-  //           <Link to="/admin" className="hover:text-gray-500 transition-colors">
-  //             {" "}
-  //             Admin{" "}
-  //           </Link>
-  //         ) : null}
-  //       </div>
-  //       <div className="flex items-center space-x-4">
-  //         {user ? (
-  //           <div className="flex items-center space-x-2">
-  //             <img
-  //               src={user.photoURL}
-  //               alt={user.displayName}
-  //               className="border rounded-full h-10"
-  //             />
-  //             <button
-  //               onClick={logout}
-  //               className="text-xs rounded-md bg-red-600 p-1"
-  //             >
-  //               Logout
-  //             </button>
-  //           </div>
-  //         ) : null}
-  //         {/* <span>{user?.displayName}</span>
-  //         <Link
-  //           to="/logout"
-  //           className="bg-red-600 px-4 py-2 rounded hover:bg-red-700 transition-colors"
-  //         >
-  //           Logout
-  //         </Link> */}
-  //       </div>
-  //     </nav>
-  //   </header>
-  // );
 }
